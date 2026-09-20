@@ -1,0 +1,1046 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analyse Immobilier Locatif - V2</title>
+    <meta name="description" content="Outil d'analyse de rentabilité locative pour investisseurs immobiliers - Version 2">
+
+    <!-- Leaflet CSS (carte) -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <!-- Font Awesome (icônes) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #2563eb;
+            --secondary: #64748b;
+            --success: #10b981;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --light: #f8fafc;
+            --dark: #0f172a;
+            --border: #e2e8f0;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: #f8fafc;
+            color: #0f172a;
+            line-height: 1.6;
+        }
+        .container { max-width: 1400px; margin: 0 auto; padding: 20px; }
+        header {
+            background: white;
+            border-bottom: 1px solid var(--border);
+            padding: 20px 0;
+            margin-bottom: 20px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        header h1 { color: var(--dark); font-size: 1.8rem; font-weight: 700; }
+        .disclaimer {
+            background: #fef2f2;
+            border: 1px solid #fecaca;
+            color: #991b1b;
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .disclaimer i { color: #ef4444; }
+        .tabs {
+            display: flex;
+            gap: 5px;
+            margin-bottom: 30px;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 10px;
+            flex-wrap: wrap;
+        }
+        .tab {
+            padding: 10px 20px;
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-weight: 500;
+        }
+        .tab:hover { background: var(--light); }
+        .tab.active { background: var(--primary); color: white; border-color: var(--primary); }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        .form-section {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+        }
+        .form-section h2 { color: var(--dark); margin-bottom: 20px; font-size: 1.4rem; }
+        .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; }
+        .form-group { display: flex; flex-direction: column; gap: 8px; }
+        .form-group label { font-weight: 500; color: var(--secondary); font-size: 0.9rem; }
+        .form-group input, .form-group select, .form-group textarea {
+            padding: 10px 14px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            font-size: 1rem;
+        }
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+        .btn {
+            padding: 12px 24px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .btn:hover { background: #1d4ed8; }
+        .btn-secondary { background: var(--light); color: var(--dark); }
+        .btn-secondary:hover { background: var(--border); }
+        .btn-danger { background: #ef4444; color: white; }
+        .btn-danger:hover { background: #dc2626; }
+        .dashboard { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            border: 1px solid var(--border);
+        }
+        .card h3 {
+            color: var(--secondary);
+            font-size: 0.9rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 15px;
+        }
+        .card-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--dark);
+            margin-bottom: 5px;
+        }
+        .card-value.success { color: var(--success); }
+        .card-value.danger { color: var(--danger); }
+        .card-label { color: var(--secondary); font-size: 0.9rem; }
+        .card-icon { font-size: 2rem; margin-bottom: 10px; opacity: 0.8; }
+        #map { height: 500px; border-radius: 12px; margin-bottom: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+        .map-controls { display: flex; gap: 10px; margin-bottom: 15px; flex-wrap: wrap; }
+        .map-legend {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            font-size: 0.9rem;
+            margin-bottom: 15px;
+        }
+        .legend-item { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+        .legend-color { width: 20px; height: 20px; border-radius: 4px; }
+        .comparison-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .comparison-card {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            border: 1px solid var(--border);
+        }
+        .comparison-card h3 { color: var(--dark); margin-bottom: 20px; padding-bottom: 15px; border-bottom: 2px solid var(--primary); }
+        .comparison-row { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid var(--border); }
+        .comparison-row:last-child { border-bottom: none; }
+        .comparison-label { color: var(--secondary); font-weight: 500; }
+        .comparison-value { font-weight: 600; color: var(--dark); }
+        .comparison-value.success { color: var(--success); }
+        .comparison-value.danger { color: var(--danger); }
+        .source-list { list-style: none; }
+        .source-item { display: flex; align-items: flex-start; gap: 12px; padding: 15px 0; border-bottom: 1px solid var(--border); }
+        .source-item:last-child { border-bottom: none; }
+        .source-icon { width: 40px; height: 40px; background: var(--light); border-radius: 8px; display: flex; align-items: center; justify-content: center; }
+        .source-content h4 { color: var(--dark); margin-bottom: 5px; }
+        .source-content p { color: var(--secondary); font-size: 0.9rem; }
+        .source-link { color: var(--primary); text-decoration: none; font-weight: 500; }
+        .source-link:hover { text-decoration: underline; }
+        .alert {
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+        }
+        .alert-info { background: #dbeafe; border: 1px solid #bfdbfe; color: #1e40af; }
+        .alert-warning { background: #fef3c7; border: 1px solid #fde68a; color: #92400e; }
+        .alert-success { background: #d1fae5; border: 1px solid #a7f3d0; color: #065f46; }
+        .dpe-comment {
+            background: #fef3c7;
+            border: 1px solid #fde68a;
+            padding: 12px;
+            border-radius: 8px;
+            margin-top: 10px;
+            font-size: 0.9rem;
+            color: #92400e;
+        }
+        .article-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        .article-item {
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 15px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        .article-item h4 {
+            color: var(--dark);
+            margin-bottom: 8px;
+        }
+        .article-item p {
+            color: var(--secondary);
+            font-size: 0.9rem;
+        }
+        .article-link {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 500;
+            margin-top: 8px;
+            display: inline-block;
+        }
+        @media (max-width: 768px) {
+            .comparison-grid { grid-template-columns: 1fr; }
+            .form-grid { grid-template-columns: 1fr; }
+            .card-value { font-size: 2rem; }
+        }
+        .mt-20 { margin-top: 20px; }
+        .mb-20 { margin-bottom: 20px; }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>🏠 Analyse Immobilier Locatif</h1>
+            <p>Outil d'analyse de rentabilité pour investisseurs</p>
+        </div>
+    </header>
+
+    <div class="container">
+        <!-- Disclaimer permanent -->
+        <div class="disclaimer">
+            <i class="fas fa-exclamation-triangle"></i>
+            <div>
+                <strong>⚠️ Disclaimer</strong> : Les données sont <strong>indicatives, biaisées et incomplètes</strong>.
+                Ce site est à but <strong>informatif uniquement</strong> et ne constitue <strong>pas un conseil en investissement</strong>.
+                Les calculs sont basés sur des moyennes et des estimations. Consultez toujours un expert avant de prendre une décision.
+            </div>
+        </div>
+
+        <div class="tabs">
+            <div class="tab active" onclick="switchTab(event, 'analyse')">Analyser un bien</div>
+            <div class="tab" onclick="switchTab(event, 'carte')">Carte & Quartiers</div>
+            <div class="tab" onclick="switchTab(event, 'comparaison')">Comparaison</div>
+            <div class="tab" onclick="switchTab(event, 'sources')">Sources & Infos</div>
+        </div>
+
+        <!-- Onglet Analyse -->
+        <div id="analyse" class="tab-content active">
+            <div class="form-section">
+                <h2>📊 Analyser un bien immobilier</h2>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="lien-annonce">Lien de l'annonce (optionnel)</label>
+                        <input type="url" id="lien-annonce" placeholder="Ex: https://www.leboncoin.fr/...">
+                        <p style="font-size: 0.8rem; color: var(--secondary);">Collez le lien d'une annonce (LeBonCoin, etc.) pour pré-remplir les champs.</p>
+                    </div>
+                    <div class="form-group">
+                        <label for="prix">Prix d'achat (€)</label>
+                        <input type="number" id="prix" placeholder="Ex: 250000" value="250000">
+                    </div>
+                    <div class="form-group">
+                        <label for="surface">Surface (m²)</label>
+                        <input type="number" id="surface" placeholder="Ex: 70" value="70">
+                    </div>
+                    <div class="form-group">
+                        <label for="loyer">Loyer mensuel estimé (€)</label>
+                        <input type="number" id="loyer" placeholder="Ex: 800" value="800">
+                    </div>
+                    <div class="form-group">
+                        <label for="charges">Charges mensuelles (€)</label>
+                        <input type="number" id="charges" placeholder="Ex: 100" value="100">
+                    </div>
+                    <div class="form-group">
+                        <label for="categorie">Catégorie</label>
+                        <select id="categorie">
+                            <option value="appartement">Appartement</option>
+                            <option value="maison">Maison</option>
+                            <option value="parking">Parking</option>
+                            <option value="immeuble">Immeuble</option>
+                            <option value="autre">Autre</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="ville">Ville</label>
+                        <select id="ville">
+                            <option value="nancy">Nancy</option>
+                            <option value="douai">Douai</option>
+                            <option value="sceaux">Sceaux</option>
+                            <option value="le-conquet">Le Conquet</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="dpe">Performance énergétique (DPE)</label>
+                        <select id="dpe">
+                            <option value="A">A</option>
+                            <option value="B">B</option>
+                            <option value="C">C</option>
+                            <option value="D">D</option>
+                            <option value="E">E</option>
+                            <option value="F">F</option>
+                            <option value="G">G</option>
+                            <option value="non-renseigne">Non renseigné</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="travaux">Enveloppe de travaux (€)</label>
+                        <textarea id="travaux" placeholder="Ex: Isolation, rénovation cuisine, peinture..." rows="2"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="taux">Taux d'emprunt (%)</label>
+                        <input type="number" id="taux" placeholder="Ex: 3.5" value="3.5" step="0.1">
+                    </div>
+                    <div class="form-group">
+                        <label for="duree">Durée de l'emprunt (ans)</label>
+                        <input type="number" id="duree" placeholder="Ex: 20" value="20">
+                    </div>
+                    <div class="form-group">
+                        <label for="apport">Apport personnel (€)</label>
+                        <input type="number" id="apport" placeholder="Ex: 50000" value="50000">
+                    </div>
+                </div>
+                <div id="dpe-comment" class="dpe-comment" style="display: none;">
+                    <i class="fas fa-info-circle"></i> <span id="dpe-comment-text"></span>
+                </div>
+                <div style="display: flex; gap: 10px; margin-top: 20px;">
+                    <button class="btn" onclick="calculerRentabilite()">
+                        <i class="fas fa-calculator"></i> Calculer la rentabilité
+                    </button>
+                    <button class="btn btn-secondary" onclick="resetForm()">
+                        <i class="fas fa-redo"></i> Réinitialiser
+                    </button>
+                </div>
+            </div>
+
+            <div id="results" style="display: none;">
+                <h2 style="margin-bottom: 20px;">📈 Résultats de l'analyse</h2>
+                <div class="dashboard">
+                    <div class="card">
+                        <div class="card-icon">💰</div>
+                        <h3>Rentabilité brute</h3>
+                        <div class="card-value" id="rentabilite-brute">0%</div>
+                        <div class="card-label">Loyer annuel / Prix d'achat</div>
+                    </div>
+                    <div class="card">
+                        <div class="card-icon">📉</div>
+                        <h3>Rentabilité nette</h3>
+                        <div class="card-value" id="rentabilite-nette">0%</div>
+                        <div class="card-label">Après charges et impôts</div>
+                    </div>
+                    <div class="card">
+                        <div class="card-icon">💵</div>
+                        <h3>Cash-flow mensuel</h3>
+                        <div class="card-value" id="cashflow">0 €</div>
+                        <div class="card-label">Bénéfice mensuel</div>
+                    </div>
+                    <div class="card">
+                        <div class="card-icon">📊</div>
+                        <h3>TRI</h3>
+                        <div class="card-value" id="tri">0%</div>
+                        <div class="card-label">Rendement annuel moyen</div>
+                    </div>
+                    <div class="card">
+                        <div class="card-icon">🏦</div>
+                        <h3>Mensualité de crédit</h3>
+                        <div class="card-value" id="mensualite">0 €</div>
+                        <div class="card-label">Emprunt sur 20 ans</div>
+                    </div>
+                    <div class="card">
+                        <div class="card-icon">📅</div>
+                        <h3>Seuil de rentabilité</h3>
+                        <div class="card-value" id="seuil">0 ans</div>
+                        <div class="card-label">Temps pour rembourser</div>
+                    </div>
+                </div>
+
+                <div class="form-section mt-20">
+                    <h2>📌 Informations complémentaires</h2>
+                    <div class="form-grid">
+                        <div class="card">
+                            <h3>Prix au m²</h3>
+                            <div class="card-value" id="prix-m2">0 €</div>
+                            <div class="card-label">Moyenne pour <span id="ville-name">Nancy</span></div>
+                        </div>
+                        <div class="card">
+                            <h3>Tension locative</h3>
+                            <div class="card-value" id="tension-locative">0/10</div>
+                        </div>
+                        <div class="card">
+                            <h3>Fourchette de loyers</h3>
+                            <div class="card-value" id="fourchette-loyers">0 - 0 €</div>
+                        </div>
+                        <div class="card">
+                            <h3>Risque de vacance</h3>
+                            <div class="card-value" id="risque-vacance">Faible</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Onglet Carte -->
+        <div id="carte" class="tab-content">
+            <div class="form-section">
+                <h2>🗺️ Carte interactive des villes et quartiers</h2>
+                <p class="text-secondary mb-20">Sélectionnez une ville pour voir les détails des quartiers, les points d'intérêt et les indicateurs clés.</p>
+                <div class="map-controls">
+                    <button class="btn btn-secondary" onclick="centerMap('nancy')">Nancy</button>
+                    <button class="btn btn-secondary" onclick="centerMap('douai')">Douai</button>
+                    <button class="btn btn-secondary" onclick="centerMap('sceaux')">Sceaux</button>
+                    <button class="btn btn-secondary" onclick="centerMap('le-conquet')">Le Conquet</button>
+                </div>
+                <div class="map-legend">
+                    <div class="legend-item"><div class="legend-color" style="background: #10b981;"></div><span>Tension élevée (8-10)</span></div>
+                    <div class="legend-item"><div class="legend-color" style="background: #f59e0b;"></div><span>Tension moyenne (5-7)</span></div>
+                    <div class="legend-item"><div class="legend-color" style="background: #ef4444;"></div><span>Tension faible (0-4)</span></div>
+                    <div class="legend-item"><i class="fas fa-school" style="color: #3b82f6;"></i><span>Écoles</span></div>
+                    <div class="legend-item"><i class="fas fa-university" style="color: #8b5cf6;"></i><span>Universités</span></div>
+                    <div class="legend-item"><i class="fas fa-building" style="color: #06b6d4;"></i><span>EHPAD</span></div>
+                    <div class="legend-item"><i class="fas fa-bus" style="color: #f59e0b;"></i><span>Transports</span></div>
+                    <div class="legend-item"><i class="fas fa-store" style="color: #10b981;"></i><span>Commerces</span></div>
+                </div>
+                <div id="map"></div>
+                <div id="city-info" style="display: none; margin-top: 20px;">
+                    <div class="card">
+                        <h3 id="city-info-title">Informations sur la ville</h3>
+                        <div class="form-grid">
+                            <div class="card"><h3>Prix au m²</h3><div class="card-value" id="city-prix-m2">0 €</div></div>
+                            <div class="card"><h3>Tension locative</h3><div class="card-value" id="city-tension">0/10</div></div>
+                            <div class="card"><h3>Fourchette loyers</h3><div class="card-value" id="city-loyers">0 - 0 €</div></div>
+                            <div class="card"><h3>Dynamisme</h3><div class="card-value" id="city-dynamisme">Moyen</div></div>
+                        </div>
+                        <div style="margin-top: 20px;">
+                            <h4 style="margin-bottom: 10px;">Quartiers :</h4>
+                            <div id="city-quartiers" style="display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 15px;"></div>
+                            <h4 style="margin-bottom: 10px;">Points d'intérêt :</h4>
+                            <div id="city-pois" style="display: flex; gap: 15px; flex-wrap: wrap;"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Onglet Comparaison -->
+        <div id="comparaison" class="tab-content">
+            <div class="form-section">
+                <h2>⚖️ Comparaison de biens</h2>
+                <p class="text-secondary mb-20">Comparez deux biens côte à côte. Le Bien 1 est automatiquement chargé depuis l'onglet "Analyser un bien".</p>
+                <div style="display: flex; gap: 10px; margin-bottom: 20px;">
+                    <button class="btn btn-danger" onclick="resetBien1()">
+                        <i class="fas fa-trash"></i> Réinitialiser le Bien 1
+                    </button>
+                </div>
+                <div class="comparison-grid">
+                    <div class="comparison-card">
+                        <h3>Bien 1 <span style="font-size: 0.8rem; color: var(--secondary);">(Actuel)</span></h3>
+                        <div class="comparison-row"><span class="comparison-label">Prix</span><span class="comparison-value" id="comp-prix-1">0 €</span></div>
+                        <div class="comparison-row"><span class="comparison-label">Surface</span><span class="comparison-value" id="comp-surface-1">0 m²</span></div>
+                        <div class="comparison-row"><span class="comparison-label">Loyer</span><span class="comparison-value" id="comp-loyer-1">0 €</span></div>
+                        <div class="comparison-row"><span class="comparison-label">Rentabilité brute</span><span class="comparison-value" id="comp-rentabilite-1">0%</span></div>
+                        <div class="comparison-row"><span class="comparison-label">Rentabilité nette</span><span class="comparison-value" id="comp-rentabilite-nette-1">0%</span></div>
+                        <div class="comparison-row"><span class="comparison-label">Cash-flow</span><span class="comparison-value" id="comp-cashflow-1">0 €</span></div>
+                        <div class="comparison-row"><span class="comparison-label">Breakeven</span><span class="comparison-value" id="comp-seuil-1">0 ans</span></div>
+                        <div class="comparison-row"><span class="comparison-label">Prix/m²</span><span class="comparison-value" id="comp-prix-m2-1">0 €</span></div>
+                    </div>
+                    <div class="comparison-card">
+                        <h3>Bien 2 <span style="font-size: 0.8rem; color: var(--secondary);">(À comparer)</span></h3>
+                        <div class="form-grid" style="margin-bottom: 15px;">
+                            <div class="form-group"><label>Prix (€)</label><input type="number" id="comp-prix-2-input" placeholder="Ex: 200000"></div>
+                            <div class="form-group"><label>Surface (m²)</label><input type="number" id="comp-surface-2-input" placeholder="Ex: 60"></div>
+                            <div class="form-group"><label>Loyer (€)</label><input type="number" id="comp-loyer-2-input" placeholder="Ex: 700"></div>
+                            <div class="form-group"><label>Ville</label><select id="comp-ville-2-input"><option value="nancy">Nancy</option><option value="douai">Douai</option></select></div>
+                        </div>
+                        <div class="comparison-row"><span class="comparison-label">Prix</span><span class="comparison-value" id="comp-prix-2">0 €</span></div>
+                        <div class="comparison-row"><span class="comparison-label">Surface</span><span class="comparison-value" id="comp-surface-2">0 m²</span></div>
+                        <div class="comparison-row"><span class="comparison-label">Loyer</span><span class="comparison-value" id="comp-loyer-2">0 €</span></div>
+                        <div class="comparison-row"><span class="comparison-label">Rentabilité brute</span><span class="comparison-value" id="comp-rentabilite-2">0%</span></div>
+                        <div class="comparison-row"><span class="comparison-label">Rentabilité nette</span><span class="comparison-value" id="comp-rentabilite-nette-2">0%</span></div>
+                        <div class="comparison-row"><span class="comparison-label">Cash-flow</span><span class="comparison-value" id="comp-cashflow-2">0 €</span></div>
+                        <div class="comparison-row"><span class="comparison-label">Breakeven</span><span class="comparison-value" id="comp-seuil-2">0 ans</span></div>
+                        <div class="comparison-row"><span class="comparison-label">Prix/m²</span><span class="comparison-value" id="comp-prix-m2-2">0 €</span></div>
+                        <button class="btn mt-20" onclick="updateComparison()" style="width: 100%;">
+                            <i class="fas fa-sync"></i> Mettre à jour
+                        </button>
+                    </div>
+                </div>
+                <div class="form-section mt-20">
+                    <h2>📊 Synthèse de la comparaison</h2>
+                    <div class="dashboard">
+                        <div class="card">
+                            <h3>Meilleur rendement brut</h3>
+                            <div class="card-value success" id="best-rentabilite-brute">-</div>
+                            <div class="card-label" id="best-rentabilite-brute-ville">-</div>
+                        </div>
+                        <div class="card">
+                            <h3>Meilleur cash-flow</h3>
+                            <div class="card-value success" id="best-cashflow">-</div>
+                            <div class="card-label" id="best-cashflow-ville">-</div>
+                        </div>
+                        <div class="card">
+                            <h3>Breakeven le plus court</h3>
+                            <div class="card-value success" id="best-seuil">-</div>
+                            <div class="card-label" id="best-seuil-ville">-</div>
+                        </div>
+                        <div class="card">
+                            <h3>Prix/m² le plus bas</h3>
+                            <div class="card-value danger" id="best-prix-m2">-</div>
+                            <div class="card-label" id="best-prix-m2-ville">-</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Onglet Sources -->
+        <div id="sources" class="tab-content">
+            <div class="form-section">
+                <h2>📚 Sources et informations complémentaires</h2>
+
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle"></i>
+                    <div>
+                        <strong>Note importante</strong><br>
+                        Les données de ce prototype sont des <strong>estimations basées sur des moyennes</strong>.
+                        Pour une analyse précise, consultez toujours les sources originales ou un expert.
+                    </div>
+                </div>
+
+                <h3 style="margin: 30px 0 20px 0;">📊 Explications des données et calculs</h3>
+                <ul class="source-list">
+                    <li class="source-item">
+                        <div class="source-icon"><i class="fas fa-chart-line"></i></div>
+                        <div class="source-content">
+                            <h4>Prix au m² par ville</h4>
+                            <p>Source: <a href="https://www.meilleursagents.com/" class="source-link" target="_blank">MeilleursAgents</a> (données 2025-2026)</p>
+                            <p class="text-secondary">Moyennes calculées sur les 12 derniers mois pour les appartements et maisons.</p>
+                        </div>
+                    </li>
+                    <li class="source-item">
+                        <div class="source-icon"><i class="fas fa-map-marker-alt"></i></div>
+                        <div class="source-content">
+                            <h4>Tension locative</h4>
+                            <p>Source: <a href="https://www.seloger.com/" class="source-link" target="_blank">SeLoger</a> et <a href="https://www.insee.fr/" class="source-link" target="_blank">INSEE</a></p>
+                            <p class="text-secondary">Indice basé sur le ratio offre/demande et le taux de vacance locative.</p>
+                        </div>
+                    </li>
+                    <li class="source-item">
+                        <div class="source-icon"><i class="fas fa-euro-sign"></i></div>
+                        <div class="source-content">
+                            <h4>Fourchette de loyers</h4>
+                            <p>Source: <a href="https://www.pap.fr/" class="source-link" target="_blank">PAP.fr</a> et <a href="https://www.leboncoin.fr/" class="source-link" target="_blank">Leboncoin</a></p>
+                            <p class="text-secondary">Loyers moyens pour des biens comparables (même surface, même nombre de pièces).</p>
+                        </div>
+                    </li>
+                </ul>
+
+                <h3 style="margin: 30px 0 20px 0;">💰 Statuts fiscaux et aides</h3>
+                <div class="article-list">
+                    <div class="article-item">
+                        <h4>📌 Dispositifs fiscaux pour l'investissement locatif</h4>
+                        <p><strong>Loi Pinel</strong> : Réduction d'impôt jusqu'à 21% pour l'achat d'un bien neuf en zone tendue. <a href="https://www.service-public.fr/particuliers/vosdroits/F1986" class="article-link" target="_blank">En savoir plus</a></p>
+                        <p><strong>LMNP (Loueur Meublé Non Professionnel)</strong> : Amortissement du bien et déduction des charges. <a href="https://www.service-public.fr/professionnels-entreprises/vosdroits/R14122" class="article-link" target="_blank">En savoir plus</a></p>
+                        <p><strong>Denormandie</strong> : Réduction d'impôt pour la rénovation de logements anciens dans certains centres-villes. <a href="https://www.service-public.fr/particuliers/vosdroits/F3119" class="article-link" target="_blank">En savoir plus</a></p>
+                        <p><strong>Censi-Bouvard</strong> : Réduction d'impôt pour l'achat d'une résidence de services (EHPAD, résidence étudiante). <a href="https://www.service-public.fr/particuliers/vosdroits/F1700" class="article-link" target="_blank">En savoir plus</a></p>
+                    </div>
+                    <div class="article-item">
+                        <h4>💡 Aides locales et régionales</h4>
+                        <p><strong>Éco-PTZ</strong> : Prêt à taux zéro pour les travaux de rénovation énergétique. <a href="https://www.service-public.fr/particuliers/vosdroits/F1757" class="article-link" target="_blank">En savoir plus</a></p>
+                        <p><strong>MaPrimeRénov'</strong> : Aide pour les travaux d'isolation, chauffage, etc. <a href="https://www.maprimerenov.gouv.fr/" class="article-link" target="_blank">Site officiel</a></p>
+                        <p><strong>Aides des collectivités locales</strong> : Certaines villes ou régions proposent des subventions pour la rénovation. Exemple : <a href="https://www.nancy.fr/" class="article-link" target="_blank">Ville de Nancy</a>.</p>
+                    </div>
+                </div>
+
+                <h3 style="margin: 30px 0 20px 0;">🌍 Dynamisme des zones (Nancy, Douai, Sceaux, Le Conquet)</h3>
+                <div class="article-list">
+                    <div class="article-item">
+                        <h4>📰 Nancy - Actualités récentes</h4>
+                        <p><strong>Nouveau quartier Stan :</strong> Projet de rénovation urbaine avec création de 1 000 logements et espaces verts. <a href="https://www.estrepublicain.fr/" class="article-link" target="_blank">Lire l'article</a> (2025)</p>
+                        <p><strong>Ligne de tram T2 :</strong> Prolongement prévu pour 2027, améliorant la desserte du centre-ville. <a href="https://www.stan.smtt.fr/" class="article-link" target="_blank">Site du réseau Stan</a></p>
+                        <p><strong>Attractivité économique :</strong> Implantation de nouveaux bureaux et startups dans le quartier Charles III. <a href="https://www.nancy.fr/economie" class="article-link" target="_blank">En savoir plus</a> (2024)</p>
+                    </div>
+                    <div class="article-item">
+                        <h4>📰 Douai - Actualités récentes</h4>
+                        <p><strong>Rénovation du centre-ville :</strong> Piétonnisation de la rue de la Marque et création de zones commerciales. <a href="https://www.ville-douai.fr/" class="article-link" target="_blank">Site de la ville</a> (2025)</p>
+                        <p><strong>Nouvelle école :</strong> Ouverture d'une école primaire dans le quartier Dorignies. <a href="https://www.lavoixdunord.fr/" class="article-link" target="_blank">Lire l'article</a> (2024)</p>
+                    </div>
+                    <div class="article-item">
+                        <h4>📰 Sceaux - Actualités récentes</h4>
+                        <p><strong>Projet Grand Paris Express :</strong> La ligne 15 Sud du métro automatisé desservira Sceaux d'ici 2025. <a href="https://www.grandparisexpress.fr/" class="article-link" target="_blank">Site officiel</a></p>
+                        <p><strong>Nouveau centre commercial :</strong> Ouverture prévue d'un centre commercial près de la gare RER. <a href="https://www.hauts-de-seine.fr/" class="article-link" target="_blank">En savoir plus</a> (2025)</p>
+                    </div>
+                    <div class="article-item">
+                        <h4>📰 Le Conquet - Actualités récentes</h4>
+                        <p><strong>Développement touristique :</strong> Investissements dans les infrastructures portuaires et les hébergements. <a href="https://www.leconquet.fr/" class="article-link" target="_blank">Site de la mairie</a> (2024)</p>
+                        <p><strong>Nouvelle école :</strong> Agrandissement de l'école primaire pour accueillir plus d'élèves. <a href="https://www.ouest-france.fr/" class="article-link" target="_blank">Lire l'article</a> (2023)</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Leaflet JS (carte) -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script>
+        // Données des villes et quartiers
+        const villesData = {
+            nancy: {
+                name: "Nancy",
+                coordinates: [48.6921, 6.1840],
+                prixM2: 3200,
+                tensionLocative: 7,
+                fourchetteLoyers: { min: 550, max: 950 },
+                risqueVacance: "Moyen",
+                dynamisme: "Élevé",
+                quartiers: [
+                    { name: "Centre-ville", coords: [[48.695, 6.185], [48.690, 6.180], [48.685, 6.185], [48.690, 6.190]), tension: 8, prixM2: 3500 },
+                    { name: "Charles III", coords: [[48.685, 6.175], [48.680, 6.170], [48.675, 6.175], [48.680, 6.180]), tension: 7, prixM2: 3000 },
+                    { name: "Haussonville", coords: [[48.700, 6.190], [48.695, 6.185], [48.690, 6.190], [48.695, 6.195]), tension: 6, prixM2: 2800 }
+                ],
+                pois: [
+                    { name: "École Stanislas", type: "École", icon: "fa-school", color: "#3b82f6", coords: [48.6900, 6.1850] },
+                    { name: "Université de Lorraine", type: "Université", icon: "fa-university", color: "#8b5cf6", coords: [48.6950, 6.1750] },
+                    { name: "EHPAD Les Jardins", type: "EHPAD", icon: "fa-building", color: "#06b6d4", coords: [48.6850, 6.1900] },
+                    { name: "Gare de Nancy", type: "Transport", icon: "fa-train", color: "#f59e0b", coords: [48.6920, 6.1800] },
+                    { name: "Centre Saint-Sébastien", type: "Commerce", icon: "fa-store", color: "#10b981", coords: [48.6880, 6.1780] }
+                ]
+            },
+            douai: {
+                name: "Douai",
+                coordinates: [50.3723, 3.0783],
+                prixM2: 2200,
+                tensionLocative: 6,
+                fourchetteLoyers: { min: 450, max: 750 },
+                risqueVacance: "Faible",
+                dynamisme: "Moyen",
+                quartiers: [
+                    { name: "Centre-ville", coords: [[50.375, 3.080], [50.370, 3.075], [50.365, 3.080], [50.370, 3.085]), tension: 7, prixM2: 2300 },
+                    { name: "Dorignies", coords: [[50.380, 3.085], [50.375, 3.080], [50.370, 3.085], [50.375, 3.090]), tension: 6, prixM2: 2100 }
+                ],
+                pois: [
+                    { name: "École Jean Jaurès", type: "École", icon: "fa-school", color: "#3b82f6", coords: [50.3700, 3.0750] },
+                    { name: "Lycée Albert Chatelet", type: "École", icon: "fa-school", color: "#3b82f6", coords: [50.3750, 3.0800] },
+                    { name: "Gare de Douai", type: "Transport", icon: "fa-bus", color: "#f59e0b", coords: [50.3720, 3.0780] },
+                    { name: "Carré Douai", type: "Commerce", icon: "fa-store", color: "#10b981", coords: [50.3740, 3.0700] }
+                ]
+            },
+            sceaux: {
+                name: "Sceaux",
+                coordinates: [48.7656, 2.2586],
+                prixM2: 5500,
+                tensionLocative: 9,
+                fourchetteLoyers: { min: 1200, max: 2000 },
+                risqueVacance: "Faible",
+                dynamisme: "Très élevé",
+                quartiers: [
+                    { name: "Centre-ville", coords: [[48.768, 2.260], [48.763, 2.255], [48.760, 2.260], [48.765, 2.265]), tension: 9, prixM2: 5800 },
+                    { name: "Robinson", coords: [[48.760, 2.265], [48.755, 2.260], [48.758, 2.258], [48.762, 2.262]), tension: 8, prixM2: 5200 }
+                ],
+                pois: [
+                    { name: "Lycée Lakanal", type: "École", icon: "fa-school", color: "#3b82f6", coords: [48.7680, 2.2600] },
+                    { name: "Faculté de Pharmacie", type: "Université", icon: "fa-university", color: "#8b5cf6", coords: [48.7600, 2.2650] },
+                    { name: "RER B Robinson", type: "Transport", icon: "fa-train", color: "#f59e0b", coords: [48.7660, 2.2580] }
+                ]
+            },
+            'le-conquet': {
+                name: "Le Conquet",
+                coordinates: [48.3550, -4.7750],
+                prixM2: 2800,
+                tensionLocative: 5,
+                fourchetteLoyers: { min: 600, max: 1000 },
+                risqueVacance: "Moyen",
+                dynamisme: "Saisonnier",
+                quartiers: [
+                    { name: "Centre-ville", coords: [[48.356, -4.775], [48.354, -4.780], [48.352, -4.778], [48.355, -4.772]), tension: 6, prixM2: 2900 },
+                    { name: "Port", coords: [[48.358, -4.770], [48.356, -4.775], [48.354, -4.770], [48.357, -4.765]), tension: 5, prixM2: 2700 }
+                ],
+                pois: [
+                    { name: "École du Conquet", type: "École", icon: "fa-school", color: "#3b82f6", coords: [48.3550, -4.7750] },
+                    { name: "Port du Conquet", type: "Transport", icon: "fa-anchor", color: "#f59e0b", coords: [48.3560, -4.7700] },
+                    { name: "Commerces centre-ville", type: "Commerce", icon: "fa-store", color: "#10b981", coords: [48.3540, -4.7780] }
+                ]
+            }
+        };
+
+        // Données DPE
+        const dpeComments = {
+            'A': "Un DPE **A** est excellent : faible impact sur la rentabilité et la vacance locative.",
+            'B': "Un DPE **B** est très bon : peu d'impact sur la rentabilité.",
+            'C': "Un DPE **C** est moyen : peut réduire légèrement la rentabilité en raison de travaux futurs.",
+            'D': "Un DPE **D** commence à impacter la rentabilité : prévoir des travaux d'isolation à moyen terme.",
+            'E': "Un DPE **E** peut réduire la rentabilité de **5 à 10%** en raison de vacances locatives plus longues.",
+            'F': "Un DPE **F** peut réduire la rentabilité de **10 à 20%** : travaux obligatoires et vacances locatives fréquentes.",
+            'G': "Un DPE **G** est très pénalisant : **réduction de 20 à 30%** de la rentabilité en raison de l'interdiction de location à partir de 2025 (sauf travaux).",
+            'non-renseigne': "Le DPE n'est pas renseigné. Vérifiez cette information pour une analyse précise."
+        };
+
+        let map;
+        let currentBien = { prix: 250000, surface: 70, loyer: 800, charges: 100, ville: 'nancy', taux: 3.5, duree: 20, apport: 50000, categorie: 'appartement', dpe: 'C', travaux: '' };
+        let quartierLayers = [];
+
+        // Initialiser la carte
+        function initMap() {
+            map = L.map('map').setView([48.6921, 6.1840], 12);
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+            }).addTo(map);
+
+            // Ajouter les marqueurs des villes
+            for (const [key, data] of Object.entries(villesData)) {
+                const color = data.tensionLocative >= 8 ? '#10b981' : data.tensionLocative >= 5 ? '#f59e0b' : '#ef4444';
+                L.circleMarker(data.coordinates, { radius: 12, fillColor: color, color: '#000', weight: 1, fillOpacity: 0.8 }).addTo(map)
+                    .bindPopup(`<b>${data.name}</b><br>Tension: ${data.tensionLocative}/10<br>Prix/m²: ${data.prixM2} €`);
+            }
+        }
+
+        // Extraire les données d'une annonce (simulation)
+        function extraireDonneesLien(lien) {
+            // Simulation pour les liens LeBonCoin (en réalité, il faudrait un backend pour scraper)
+            if (lien.includes('leboncoin.fr')) {
+                return {
+                    prix: 220000,
+                    surface: 65,
+                    loyer: 750,
+                    ville: 'nancy'
+                };
+            } else if (lien.includes('seloger.com')) {
+                return {
+                    prix: 280000,
+                    surface: 80,
+                    loyer: 900,
+                    ville: 'sceaux'
+                };
+            } else {
+                alert("Ce site n'est pas encore pris en charge pour l'extraction automatique. Veuillez entrer les données manuellement.");
+                return null;
+            }
+        }
+
+        // Mettre à jour le formulaire depuis un lien
+        function updateFromLien() {
+            const lien = document.getElementById('lien-annonce').value;
+            if (!lien) return;
+
+            const data = extraireDonneesLien(lien);
+            if (data) {
+                document.getElementById('prix').value = data.prix;
+                document.getElementById('surface').value = data.surface;
+                document.getElementById('loyer').value = data.loyer;
+                document.getElementById('ville').value = data.ville;
+                alert("Les données ont été pré-remplies depuis le lien ! Vérifiez et ajustez si nécessaire.");
+            }
+        }
+
+        // Calculer la rentabilité
+        function calculerRentabilite() {
+            currentBien.prix = parseFloat(document.getElementById('prix').value) || 0;
+            currentBien.surface = parseFloat(document.getElementById('surface').value) || 0;
+            currentBien.loyer = parseFloat(document.getElementById('loyer').value) || 0;
+            currentBien.charges = parseFloat(document.getElementById('charges').value) || 0;
+            currentBien.ville = document.getElementById('ville').value;
+            currentBien.taux = parseFloat(document.getElementById('taux').value) || 0;
+            currentBien.duree = parseInt(document.getElementById('duree').value) || 0;
+            currentBien.apport = parseFloat(document.getElementById('apport').value) || 0;
+            currentBien.categorie = document.getElementById('categorie').value;
+            currentBien.dpe = document.getElementById('dpe').value;
+            currentBien.travaux = document.getElementById('travaux').value;
+
+            const villeData = villesData[currentBien.ville];
+
+            // Mettre à jour le commentaire DPE
+            const dpeComment = dpeComments[currentBien.dpe] || dpeComments['non-renseigne'];
+            document.getElementById('dpe-comment').style.display = 'block';
+            document.getElementById('dpe-comment-text').textContent = dpeComment;
+
+            const loyerAnnuel = currentBien.loyer * 12;
+            const fraisAcquisition = currentBien.prix * 0.08;
+            const coutTotal = currentBien.prix + fraisAcquisition;
+
+            // Rentabilité brute
+            const rentabiliteBrute = (loyerAnnuel / currentBien.prix * 100).toFixed(2);
+
+            // Mensualité de crédit
+            const montantEmprunt = currentBien.prix - currentBien.apport;
+            const tauxMensuel = (currentBien.taux / 100) / 12;
+            const nombreMois = currentBien.duree * 12;
+            const mensualite = montantEmprunt * tauxMensuel * Math.pow(1 + tauxMensuel, nombreMois) /
+                             (Math.pow(1 + tauxMensuel, nombreMois) - 1);
+
+            // Cash-flow mensuel
+            const cashFlowMensuel = (loyerAnnuel / 12) - mensualite - currentBien.charges;
+
+            // Rentabilité nette (simplifiée)
+            const impots = loyerAnnuel * 0.30; // Estimation
+            const cashFlowAnnuelNet = loyerAnnuel - (currentBien.charges * 12) - impots;
+            const rentabiliteNette = (cashFlowAnnuelNet / coutTotal * 100).toFixed(2);
+
+            // TRI (simplifié)
+            const tri = (parseFloat(rentabiliteBrute) * 0.8).toFixed(2);
+
+            // Seuil de rentabilité (breakeven)
+            const seuil = (coutTotal / cashFlowAnnuelNet).toFixed(1);
+
+            // Afficher les résultats
+            document.getElementById('results').style.display = 'block';
+            document.getElementById('rentabilite-brute').textContent = rentabiliteBrute + '%';
+            document.getElementById('rentabilite-nette').textContent = rentabiliteNette + '%';
+            document.getElementById('cashflow').textContent = cashFlowMensuel.toFixed(0) + ' €';
+            document.getElementById('cashflow').className = cashFlowMensuel >= 0 ? 'card-value success' : 'card-value danger';
+            document.getElementById('tri').textContent = tri + '%';
+            document.getElementById('mensualite').textContent = mensualite.toFixed(0) + ' €';
+            document.getElementById('seuil').textContent = seuil + ' ans';
+            document.getElementById('prix-m2').textContent = villeData.prixM2 + ' €';
+            document.getElementById('tension-locative').textContent = villeData.tensionLocative + '/10';
+            document.getElementById('fourchette-loyers').textContent = villeData.fourchetteLoyers.min + ' - ' + villeData.fourchetteLoyers.max + ' €';
+            document.getElementById('risque-vacance').textContent = villeData.risqueVacance;
+            document.getElementById('ville-name').textContent = villeData.name;
+
+            // Mettre à jour la comparaison
+            updateComparison();
+            saveBien1();
+        }
+
+        // Sauvegarder le Bien 1 pour la comparaison
+        function saveBien1() {
+            localStorage.setItem('bien1', JSON.stringify(currentBien));
+        }
+
+        // Réinitialiser le formulaire
+        function resetForm() {
+            document.getElementById('prix').value = 250000;
+            document.getElementById('surface').value = 70;
+            document.getElementById('loyer').value = 800;
+            document.getElementById('charges').value = 100;
+            document.getElementById('ville').value = 'nancy';
+            document.getElementById('taux').value = 3.5;
+            document.getElementById('duree').value = 20;
+            document.getElementById('apport').value = 50000;
+            document.getElementById('categorie').value = 'appartement';
+            document.getElementById('dpe').value = 'C';
+            document.getElementById('travaux').value = '';
+            document.getElementById('lien-annonce').value = '';
+            document.getElementById('results').style.display = 'none';
+            document.getElementById('dpe-comment').style.display = 'none';
+            localStorage.removeItem('bien1');
+        }
+
+        // Réinitialiser le Bien 1 dans la comparaison
+        function resetBien1() {
+            localStorage.removeItem('bien1');
+            updateComparison();
+        }
+
+        // Centrer la carte sur une ville
+        function centerMap(cityKey) {
+            const data = villesData[cityKey];
+
+            // Effacer les anciens polygones et marqueurs
+            if (window.quartierLayers) {
+                window.quartierLayers.forEach(layer => map.removeLayer(layer));
+            }
+            if (window.poiMarkers) {
+                window.poiMarkers.forEach(marker => map.removeLayer(marker));
+            }
+
+            map.setView(data.coordinates, 13);
+
+            // Ajouter les polygones des quartiers
+            window.quartierLayers = [];
+            data.quartiers.forEach(quartier => {
+                const color = quartier.tension >= 8 ? '#10b981' : quartier.tension >= 5 ? '#f59e0b' : '#ef4444';
+                const polygon = L.polygon(quartier.coords, {
+                    fillColor: color,
+                    color: '#000',
+                    weight: 1,
+                    fillOpacity: 0.4
+                }).addTo(map);
+                polygon.bindPopup(`<b>${quartier.name}</b><br>Tension: ${quartier.tension}/10<br>Prix/m²: ${quartier.prixM2} €`);
+                window.quartierLayers.push(polygon);
+            });
+
+            // Ajouter les marqueurs des POI
+            window.poiMarkers = [];
+            data.pois.forEach(poi => {
+                const marker = L.marker(poi.coords, {
+                    icon: L.divIcon({
+                        className: 'poi-icon',
+                        html: `<i class="fas ${poi.icon}" style="color: ${poi.color}; font-size: 20px;"></i>`,
+                        iconSize: [30, 30]
+                    })
+                }).addTo(map);
+                marker.bindPopup(`<b>${poi.name}</b><br>${poi.type}`);
+                window.poiMarkers.push(marker);
+            });
+
+            // Afficher les infos de la ville
+            document.getElementById('city-info').style.display = 'block';
+            document.getElementById('city-info-title').textContent = 'Informations sur ' + data.name;
+            document.getElementById('city-prix-m2').textContent = data.prixM2 + ' €';
+            document.getElementById('city-tension').textContent = data.tensionLocative + '/10';
+            document.getElementById('city-loyers').textContent = data.fourchetteLoyers.min + ' - ' + data.fourchetteLoyers.max + ' €';
+            document.getElementById('city-dynamisme').textContent = data.dynamisme;
+
+            // Afficher les quartiers
+            const quartiersContainer = document.getElementById('city-quartiers');
+            quartiersContainer.innerHTML = '';
+            data.quartiers.forEach(quartier => {
+                const quartierElement = document.createElement('div');
+                quartierElement.style.display = 'flex';
+                quartierElement.style.alignItems = 'center';
+                quartierElement.style.gap = '8px';
+                quartierElement.style.padding = '8px 12px';
+                quartierElement.style.background = '#f1f5f9';
+                quartierElement.style.borderRadius = '6px';
+                quartierElement.innerHTML = `<span>${quartier.name}</span>`;
+                quartiersContainer.appendChild(quartierElement);
+            });
+
+            // Afficher les POI
+            const poisContainer = document.getElementById('city-pois');
+            poisContainer.innerHTML = '';
+            data.pois.forEach(poi => {
+                const poiElement = document.createElement('div');
+                poiElement.style.display = 'flex';
+                poiElement.style.alignItems = 'center';
+                poiElement.style.gap = '8px';
+                poiElement.style.padding = '8px 12px';
+                poiElement.style.background = '#f1f5f9';
+                poiElement.style.borderRadius = '6px';
+                poiElement.innerHTML = `<i class="fas ${poi.icon}" style="color: ${poi.color};"></i><span>${poi.name}</span>`;
+                poisContainer.appendChild(poiElement);
+            });
+        }
+
+        // Changer d'onglet
+        function switchTab(evt, tabName) {
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+            document.getElementById(tabName).classList.add('active');
+            evt.currentTarget.classList.add('active');
+
+            if (tabName === 'carte' && !map) {
+                initMap();
+            }
+        }
+
+        // Mettre à jour la comparaison
+        function updateComparison() {
+            // Bien 1 (depuis le localStorage ou les valeurs actuelles)
+            let bien1 = JSON.parse(localStorage.getItem('bien1')) || currentBien;
+            const bien2 = {
+                prix: parseFloat(document.getElementById('comp-prix-2-input').value) || 0,
+                surface: parseFloat(document.getElementById('comp-surface-2-input').value) || 0,
+                loyer: parseFloat(document.getElementById('comp-loyer-2-input').value) || 0,
+                ville: document.getElementById('comp-ville-2-input').value,
+                villeData: villesData[document.getElementById('comp-ville-2-input').value]
+            };
+
+            // Calculs pour Bien 1
+            const loyerAnnuel1 = bien1.loyer * 12;
+            const rentabiliteBrute1 = (loyerAnnuel1 / bien1.prix * 100).toFixed(2);
+            const mensualite1 = (bien1.prix - bien1.apport) * (bien1.taux / 100 / 12) *
+                              Math.pow(1 + (bien1.taux / 100 / 12), bien1.duree * 12) /
+                              (Math.pow(1 + (bien1.taux / 100 / 12), bien1.duree * 12) - 1);
+            const cashFlow1 = (loyerAnnuel1 / 12) - mensualite1 - bien1.charges;
+            const seuil1 = (bien1.prix / (loyerAnnuel1 - bien1.charges * 12)).toFixed(1);
+            const rentabiliteNette1 = (loyerAnnuel1 - bien1.charges * 12 - loyerAnnuel1 * 0.30) / (bien1.prix * 1.08) * 100;
+
+            // Calculs pour Bien 2
+            const loyerAnnuel2 = bien2.loyer * 12;
+            const rentabiliteBrute2 = (loyerAnnuel2 / bien2.prix * 100).toFixed(2);
+            const mensualite2 = (bien2.prix * 0.8) * (3.5 / 100 / 12) * Math.pow(1 + (3.5 / 100 / 12), 20 * 12) /
+                              (Math.pow(1 + (3.5 / 100 / 12), 20 * 12) - 1);
+            const cashFlow2 = (loyerAnnuel2 / 12) - mensualite2 - 100;
+            const seuil2 = (bien2.prix / (loyerAnnuel2 - 1200)).toFixed(1);
+            const rentabiliteNette2 = (loyerAnnuel2 - 1200 - loyerAnnuel2 * 0.30) / (bien2.prix * 1.08) * 100;
+
+            // Mettre à jour Bien 1
+            document.getElementById('comp-prix-1').textContent = bien1.prix.toLocaleString() + ' €';
+            document.getElementById('comp-surface-1').textContent = bien1.surface + ' m²';
+            document.getElementById('comp-loyer-1').textContent = bien1.loyer.toLocaleString() + ' €';
+            document.getElementById('comp-rentabilite-1').textContent = rentabiliteBrute1 + '%';
+            document.getElementById('comp-rentabilite-nette-1').textContent = rentabiliteNette1.toFixed(2) + '%';
+            document.getElementById('comp-cashflow-1').textContent = cashFlow1.toFixed(0) + ' €';
+            document.getElementById('comp-cashflow-1').className = cashFlow1 >= 0 ? 'comparison-value success' : 'comparison-value danger';
+            document.getElementById('comp-seuil-1').textContent = seuil1 + ' ans';
+            document.getElementById('comp-prix-m2-1').textContent = villesData[bien1.ville].prixM2.toLocaleString() + ' €';
+
+            // Mettre à jour Bien 2
+            document.getElementById('comp-prix-2').textContent = bien2.prix.toLocaleString() + ' €';
+            document.getElementById('comp-surface-2').textContent = bien2.surface + ' m²';
+            document.getElementById('comp-loyer-2').textContent = bien2.loyer.toLocaleString() + ' €';
+            document.getElementById('comp-rentabilite-2').textContent = rentabiliteBrute2 + '%';
+            document.getElementById('comp-rentabilite-nette-2').textContent = rentabiliteNette2.toFixed(2) + '%';
+            document.getElementById('comp-cashflow-2').textContent = cashFlow2.toFixed(0) + ' €';
+            document.getElementById('comp-cashflow-2').className = cashFlow2 >= 0 ? 'comparison-value success' : 'comparison-value danger';
+            document.getElementById('comp-seuil-2').textContent = seuil2 + ' ans';
+            document.getElementById('comp-prix-m2-2').textContent = bien2.villeData.prixM2.toLocaleString() + ' €';
+
+            // Synthèse
+            const bestRentabiliteBrute = parseFloat(rentabiliteBrute1) > parseFloat(rentabiliteBrute2) ? 'Bien 1' : 'Bien 2';
+            const bestRentabiliteBruteValue = Math.max(parseFloat(rentabiliteBrute1), parseFloat(rentabiliteBrute2)).toFixed(2) + '%';
+            const bestRentabiliteBruteVille = parseFloat(rentabiliteBrute1) > parseFloat(rentabiliteBrute2) ? villesData[bien1.ville].name : bien2.villeData.name;
+
+            const bestCashflow = cashFlow1 > cashFlow2 ? 'Bien 1' : 'Bien 2';
+            const bestCashflowValue = Math.max(cashFlow1, cashFlow2).toFixed(0) + ' €';
+            const bestCashflowVille = cashFlow1 > cashFlow2 ? villesData[bien1.ville].name : bien2.villeData.name;
+
+            const bestSeuil = parseFloat(seuil1) < parseFloat(seuil2) ? 'Bien 1' : 'Bien 2';
+            const bestSeuilValue = Math.min(parseFloat(seuil1), parseFloat(seuil2)).toFixed(1) + ' ans';
+            const bestSeuilVille = parseFloat(seuil1) < parseFloat(seuil2) ? villesData[bien1.ville].name : bien2.villeData.name;
+
+            const bestPrixM2 = villesData[bien1.ville].prixM2 < bien2.villeData.prixM2 ? 'Bien 1' : 'Bien 2';
+            const bestPrixM2Value = Math.min(villesData[bien1.ville].prixM2, bien2.villeData.prixM2).toLocaleString() + ' €';
+            const bestPrixM2Ville = villesData[bien1.ville].prixM2 < bien2.villeData.prixM2 ? villesData[bien1.ville].name : bien2.villeData.name;
+
+            document.getElementById('best-rentabilite-brute').textContent = bestRentabiliteBruteValue;
+            document.getElementById('best-rentabilite-brute-ville').textContent = bestRentabiliteBruteVille;
+            document.getElementById('best-cashflow').textContent = bestCashflowValue;
+            document.getElementById('best-cashflow-ville').textContent = bestCashflowVille;
+            document.getElementById('best-seuil').textContent = bestSeuilValue;
+            document.getElementById('best-seuil-ville').textContent = bestSeuilVille;
+            document.getElementById('best-prix-m2').textContent = bestPrixM2Value;
+            document.getElementById('best-prix-m2-ville').textContent = bestPrixM2Ville;
+        }
+
+        // Initialisation
+        document.addEventListener('DOMContentLoaded', function() {
+            initMap();
+            updateComparison();
+
+            // Écouter les changements du lien d'annonce
+            document.getElementById('lien-annonce').addEventListener('blur', updateFromLien);
+        });
+    </script>
+</body>
+</html>
+
