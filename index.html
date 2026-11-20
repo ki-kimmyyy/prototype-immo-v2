@@ -12,23 +12,24 @@
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700&display=swap">
     <style>
         :root {
-            --primary: #BDA18A;      /* beige foncé : boutons et accents */
-            --secondary: #606C5A;    /* vert foncé : textes secondaires */
-            --success: #606C5A;      /* vert : valeurs gagnantes / cash-flow positif */
-            --danger: #a3563f;       /* terre cuite sobre : alertes et valeurs négatives */
-            --warning: #BDA18A;
-            --light: #f5efe6;        /* fond général */
-            --dark: #2A2C24;         /* couleur des textes */
-            --border: #D5CABC;       /* beige moyen : bordures */
-            --card-bg: #D5CABC;      /* beige moyen : zones de texte sur le fond */
-            --footer-bg: #606C5A;   /* vert foncé : bannière du bas */
-            --footer-text: #D5CABC; /* beige moyen : texte de la bannière du bas */
+            --primary: #1e3a5f;      /* bleu foncé : boutons et accents */
+            --primary-hover: #16304f;
+            --secondary: #5a6b7d;    /* gris-bleu doux : textes secondaires */
+            --success: #1e6e54;      /* vert sobre : valeurs gagnantes / cash-flow positif */
+            --danger: #b0453a;       /* rouge brique doux : alertes et valeurs négatives */
+            --warning: #b07d2b;
+            --light: #faf7f2;        /* crème : fond général */
+            --dark: #1e3a5f;         /* bleu foncé : couleur des textes */
+            --border: #e6e0d6;       /* beige clair : bordures */
+            --card-bg: #ffffff;      /* blanc pur : cartes et zones de texte */
+            --footer-bg: #1e3a5f;    /* bleu foncé : bannière du bas */
+            --footer-text: #e8eef5; /* bleu très clair : texte de la bannière du bas */
         }
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             font-family: 'HK Grotesk', 'Hanken Grotesk', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-            background-color: #f5efe6;
-            color: #2A2C24;
+            background-color: #faf7f2;
+            color: #1e3a5f;
             line-height: 1.6;
             display: flex;
             flex-direction: column;
@@ -43,6 +44,22 @@
         }
         header h1 { color: var(--dark); font-size: 1.8rem; font-weight: 700; }
         header p { color: var(--secondary); margin-top: 5px; }
+        .header-inner { display: flex; align-items: flex-start; justify-content: space-between; gap: 20px; flex-wrap: wrap; }
+        .header-links { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; padding-top: 6px; }
+        .header-link {
+            padding: 10px 20px;
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 999px;
+            cursor: pointer;
+            font-weight: 500;
+            color: var(--dark);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s;
+        }
+        .header-link:hover { background: var(--border); border-color: var(--secondary); }
         .disclaimer {
             background: #fef2f2;
             border: 1px solid #fecaca;
@@ -84,7 +101,7 @@
             gap: 8px;
         }
         .tab:hover { background: var(--border); }
-        .tab.active { background: var(--primary); color: var(--dark); border-color: var(--primary); }
+        .tab.active { background: var(--primary); color: #ffffff; border-color: var(--primary); }
 
         /* Badge "prototype" dans le bandeau de navigation */
         .proto-badge {
@@ -117,10 +134,26 @@
         }
         .construction-note i { color: #f59e0b; margin-top: 2px; }
 
-        /* Conseils d'amélioration de la rentabilité */
-        .advice-list { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 12px; margin-top: 15px; }
+        /* Conseils d'amélioration de la rentabilité (bande défilante) */
+        .advice-carousel { position: relative; margin-top: 15px; }
+        .advice-list {
+            display: flex;
+            gap: 12px;
+            overflow-x: auto;
+            scroll-snap-type: x proximity;
+            padding: 5px 2px 12px 2px;
+            scroll-behavior: smooth;
+            -webkit-overflow-scrolling: touch;
+        }
+        .advice-list::-webkit-scrollbar { height: 8px; }
+        .advice-list::-webkit-scrollbar-track { background: var(--light); border-radius: 999px; }
+        .advice-list::-webkit-scrollbar-thumb { background: var(--border); border-radius: 999px; }
+        .advice-list::-webkit-scrollbar-thumb:hover { background: var(--secondary); }
         .advice-card {
-            background: var(--light);
+            flex: 0 0 auto;
+            width: 260px;
+            scroll-snap-align: start;
+            background: var(--card-bg);
             border: 1px solid var(--border);
             border-radius: 10px;
             padding: 14px;
@@ -131,6 +164,7 @@
         .advice-card h5 { display: flex; align-items: center; gap: 8px; font-size: 0.95rem; margin-bottom: 6px; }
         .advice-card h5 i { color: var(--primary); }
         .advice-card p { font-size: 0.82rem; color: var(--secondary); }
+        .advice-card p::before { content: "\f058"; font-family: "Font Awesome 6 Free"; font-weight: 900; font-size: 0.7rem; color: var(--primary); margin-right: 6px; }
         .advice-detail {
             display: none;
             margin-top: 10px;
@@ -143,6 +177,27 @@
             line-height: 1.5;
         }
         .advice-detail.visible { display: block; }
+        .advice-arrow {
+            position: absolute;
+            top: 42%;
+            transform: translateY(-50%);
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            color: var(--primary);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.12);
+            z-index: 5;
+            font-size: 0.8rem;
+        }
+        .advice-arrow:hover { background: var(--border); }
+        .advice-arrow.left { left: -12px; }
+        .advice-arrow.right { right: -12px; }
 
         /* Formulaire de contact (désactivé) */
         .contact-disabled-banner {
@@ -232,7 +287,7 @@
         .btn {
             padding: 12px 24px;
             background: var(--primary);
-            color: var(--dark);
+            color: #ffffff;
             border: none;
             border-radius: 999px;
             font-size: 1rem;
@@ -243,7 +298,7 @@
             align-items: center;
             gap: 8px;
         }
-        .btn:hover { background: #ab8f77; }
+        .btn:hover { background: var(--primary-hover); }
         .btn-secondary { background: var(--light); color: var(--dark); border: 1px solid var(--border); }
         .btn-secondary:hover { background: var(--border); }
         .btn-danger { background: var(--danger); color: var(--light); }
@@ -317,7 +372,7 @@
             transition: all 0.2s;
         }
         .quartier-chip:hover { background: var(--border); }
-        .quartier-chip.selected { background: var(--primary); color: var(--dark); border-color: var(--primary); }
+        .quartier-chip.selected { background: var(--primary); color: #ffffff; border-color: var(--primary); }
 
 
         /* POI en colonnes par catégorie */
@@ -371,6 +426,45 @@
         .comp-table td.winner { font-weight: 700; color: #166534; background: #f0fdf4; border: 1px solid #86efac; border-radius: 6px; }
         .comp-table td.loser { font-weight: 700; color: #991b1b; background: #fef2f2; border: 1px solid #fecaca; border-radius: 6px; }
         .comparison-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+
+        /* Compositions sauvegardées (bande défilante + comparateur multi) */
+        .compo-track {
+            display: flex;
+            gap: 12px;
+            overflow-x: auto;
+            padding: 5px 2px 12px 2px;
+            scroll-snap-type: x proximity;
+        }
+        .compo-track::-webkit-scrollbar { height: 8px; }
+        .compo-track::-webkit-scrollbar-track { background: var(--light); border-radius: 999px; }
+        .compo-track::-webkit-scrollbar-thumb { background: var(--border); border-radius: 999px; }
+        .compo-chip {
+            flex: 0 0 auto;
+            width: 235px;
+            scroll-snap-align: start;
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 12px;
+        }
+        .compo-chip h5 { font-size: 0.95rem; margin-bottom: 6px; display: flex; align-items: center; gap: 8px; }
+        .compo-chip h5 i { color: var(--primary); }
+        .compo-stats { font-size: 0.8rem; color: var(--secondary); line-height: 1.5; }
+        .compo-btns { display: flex; gap: 8px; margin-top: 10px; }
+        .compo-btns .btn { padding: 6px 12px; font-size: 0.8rem; }
+        .compo-del {
+            width: 30px; height: 30px;
+            border-radius: 50%;
+            border: 1px solid var(--border);
+            background: var(--card-bg);
+            color: var(--danger);
+            cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .compo-del:hover { background: #fef2f2; border-color: var(--danger); }
+        .multi-table-wrap { overflow-x: auto; margin-top: 20px; padding-bottom: 10px; }
+        .multi-table-wrap .comp-table { min-width: 560px; }
+        .compo-empty { color: var(--secondary); font-size: 0.88rem; padding: 10px 0; }
         @media (max-width: 768px) {
             .comparison-grid { grid-template-columns: 1fr; }
             .form-grid { grid-template-columns: 1fr; }
@@ -492,9 +586,15 @@
 </head>
 <body>
     <header>
-        <div class="container">
-            <h1>Analyse Immobilier Locatif</h1>
-            <p>Outil d'analyse de rentabilité pour investisseurs</p>
+        <div class="container header-inner">
+            <div>
+                <h1>Analyse Immobilier Locatif</h1>
+                <p>Outil d'analyse de rentabilité pour investisseurs</p>
+            </div>
+            <div class="header-links">
+                <div class="header-link" onclick="goToTab('apropos')"><i class="fas fa-circle-info"></i> A propos</div>
+                <div class="header-link" onclick="goToTab('contact')"><i class="fas fa-envelope"></i> Nous contacter</div>
+            </div>
         </div>
     </header>
 
@@ -504,8 +604,6 @@
         <div class="tab" onclick="goToTab('carte')"><i class="fas fa-map-location-dot"></i> Carte &amp; Quartiers</div>
         <div class="tab" onclick="goToTab('comparaison')"><i class="fas fa-scale-balanced"></i> Comparaison</div>
         <div class="tab" onclick="goToTab('sources')"><i class="fas fa-book"></i> Sources &amp; Infos</div>
-        <div class="tab" onclick="goToTab('apropos')"><i class="fas fa-circle-info"></i> A propos</div>
-        <div class="tab" onclick="goToTab('contact')"><i class="fas fa-envelope"></i> Nous contacter</div>
         <div class="proto-badge" title="Site en cours de développement"><i class="fas fa-flask"></i> Ce site est un prototype</div>
     </nav>
 
@@ -560,14 +658,15 @@
                             <option value="autre">Autre</option>
                         </select>
                     </div>
-                    <div class="form-group">
+                    <div class="form-group has-tooltip" data-tooltip="Saisissez librement le nom de la ville. Les données de référence (prix au m2, tension locative) sont fournies pour Nancy, Douai, Sceaux et Le Conquet. Pour toute autre ville, les indicateurs urbains resteront vides mais les calculs de rentabilité fonctionnent.">
                         <label for="ville">Ville</label>
-                        <select id="ville">
-                            <option value="nancy">Nancy</option>
-                            <option value="douai">Douai</option>
-                            <option value="sceaux">Sceaux</option>
-                            <option value="le-conquet">Le Conquet</option>
-                        </select>
+                        <input id="ville" list="villes-list" autocomplete="off" placeholder="Tapez ou choisissez une ville...">
+                        <datalist id="villes-list">
+                            <option value="Nancy"></option>
+                            <option value="Douai"></option>
+                            <option value="Sceaux"></option>
+                            <option value="Le Conquet"></option>
+                        </datalist>
                     </div>
                     <div class="form-group">
                         <label for="dpe">Performance énergétique (DPE)</label>
@@ -619,8 +718,11 @@
 
             <div class="form-section">
                 <h2>Améliorer la rentabilité de votre projet</h2>
-                <p style="color: var(--secondary); margin-bottom: 5px;">Voici des pistes potentielles pour ajuster positivement votre stratégie d'investissement. Cliquez sur une piste pour afficher le détail et son impact potentiel.</p>
-                <div class="advice-list">
+                <p style="color: var(--secondary); margin-bottom: 5px;">Des pistes potentielles pour ajuster positivement votre stratégie d'investissement. Faites glisser la bande de gauche à droite, et cliquez sur une carte pour afficher le détail et son impact.</p>
+                <div class="advice-carousel">
+                    <button class="advice-arrow left" onclick="slideAdvice(-1)" aria-label="Précédent"><i class="fas fa-chevron-left"></i></button>
+                    <button class="advice-arrow right" onclick="slideAdvice(1)" aria-label="Suivant"><i class="fas fa-chevron-right"></i></button>
+                <div class="advice-list" id="advice-list">
                     <div class="advice-card" onclick="toggleAdvice('advice-loyer', this)">
                         <h5><i class="fas fa-arrow-trend-up"></i> Optimiser le loyer</h5>
                         <p>Vérifiez que votre loyer est aligné sur le marché du quartier (voir l'onglet Carte &amp; Quartiers).</p>
@@ -656,6 +758,7 @@
                         <p>Apport, durée du prêt : le couple durée/apport influence le cash-flow.</p>
                         <div class="advice-detail" id="advice-financement">Un apport plus élevé réduit le montant emprunté et donc les mensualités, mais garde une épargne de précaution. Allonger la durée du prêt diminue la mensualité (meilleur cash-flow mensuel) mais augmente le coût total des intérêts. Testez plusieurs scénarios avec le champ "Durée de l'emprunt".</div>
                     </div>
+                </div>
                 </div>
             </div>
 
@@ -758,6 +861,17 @@
                     <div class="legend-item"><i class="fas fa-store" style="color: #10b981;"></i><span>Commerces</span></div>
                 </div>
                 <div id="map"></div>
+                <p style="font-size: 0.75rem; color: var(--secondary); margin-top: -10px;">Astuce : naviguez librement dans la carte (zoom molette, déplacement à la souris ou au doigt). Les contours de quartiers sont indicatifs.</p>
+
+                <div class="card" style="margin-top: 20px;">
+                    <h3>Où trouver des données supplémentaires sur les ventes</h3>
+                    <p style="font-size: 0.88rem; color: var(--secondary); margin-bottom: 8px;">Pour affiner l'analyse d'un quartier, ces sites publics et professionnels reprennent les ventes réelles des dernières années :</p>
+                    <ul style="font-size: 0.88rem; color: var(--secondary); padding-left: 20px;">
+                        <li><a href="https://app.dvf.etalab.gouv.fr/" class="source-link" target="_blank">Demandes de valeurs foncières (DVF) sur data.gouv</a> : toutes les ventes officielles par adresse et par commune.</li>
+                        <li><a href="https://www.prix-immo.notaires.fr/" class="source-link" target="_blank">Prix-Immo (Notaires de France)</a> : statistiques de prix issues des actes notariés.</li>
+                        <li><a href="https://www.immo-dvf.fr/" class="source-link" target="_blank">Immo-DVF</a> : synthèses de ventes par commune et par quartier.</li>
+                    </ul>
+                </div>
 
                 <div id="city-info" style="display: none;">
                     <div class="card">
@@ -816,7 +930,7 @@
                             <div class="form-group"><label>Surface (m2)</label><input type="number" id="comp-surface-2-input" placeholder="Ex: 60"></div>
                             <div class="form-group"><label>Loyer (EUR)</label><input type="number" id="comp-loyer-2-input" placeholder="Ex: 700"></div>
                             <div class="form-group"><label>Charges mensuelles (EUR)</label><input type="number" id="comp-charges-2-input" placeholder="Ex: 100" value="100"></div>
-                            <div class="form-group"><label>Ville</label><select id="comp-ville-2-input"><option value="nancy">Nancy</option><option value="douai">Douai</option><option value="sceaux">Sceaux</option><option value="le-conquet">Le Conquet</option></select></div>
+                            <div class="form-group has-tooltip" data-tooltip="Saisissez librement le nom de la ville (Nancy, Douai, Sceaux ou Le Conquet)."><label>Ville</label><input id="comp-ville-2-input" list="villes-list" autocomplete="off" placeholder="Ex: Nancy"></div>
                         </div>
                         <button class="btn" onclick="updateComparison()" style="width: 100%;">
                             <i class="fas fa-sync"></i> Mettre à jour
@@ -846,6 +960,21 @@
                             </tbody>
                         </table>
                     </div>
+                </div>
+            </div>
+
+            <div class="form-section">
+                <h2>Compositions sauvegardées</h2>
+                <p style="color: var(--secondary); margin-bottom: 15px;">Enregistrez plusieurs compositions de biens pour les préparer à l'avance et les comparer toutes côte à côte. Faites défiler la bande pour naviguer d'une composition à l'autre.</p>
+                <div style="display: flex; gap: 10px; margin-bottom: 15px; flex-wrap: wrap;">
+                    <input id="compo-name" placeholder="Nom de la composition (ex: T2 Nancy centre)" style="flex: 1; min-width: 220px; padding: 10px 16px; border: 1px solid var(--border); border-radius: 999px; font-size: 0.95rem;">
+                    <button class="btn" onclick="saveCompo()">
+                        <i class="fas fa-floppy-disk"></i> Enregistrer le Bien 2 actuel
+                    </button>
+                </div>
+                <div class="compo-track" id="compo-track"></div>
+                <div class="multi-table-wrap">
+                    <table class="comp-table" id="multi-table"></table>
                 </div>
             </div>
 
@@ -1096,7 +1225,7 @@
                 <div><strong>Tout investissement comporte des risques, en particulier un risque de perte en capital.</strong></div>
                 <div>Les données affichées sont indicatives, biaisées et incomplètes. Elles ne représentent jamais parfaitement la réalité et ne constituent qu'un indicateur. Ce site est à but informatif uniquement et ne constitue pas un conseil en investissement.</div>
             </div>
-            <div class="footer-bottom">Analyse Immobilier Locatif - Prototype V3 - Les informations fournies ne sauraient engager la responsabilité de l'éditeur du site.</div>
+            <div class="footer-bottom">Analyse Immobilier Locatif - Prototype V4 - Les informations fournies ne sauraient engager la responsabilité de l'éditeur du site.</div>
         </div>
     </footer>
 
@@ -1246,7 +1375,7 @@
             var target = document.getElementById(tabName);
             if (target) target.classList.add('active');
             // Active l'onglet correspondant dans la nav
-            var tabMap = { analyse: 0, carte: 1, comparaison: 2, sources: 3, apropos: 4, contact: 5 };
+            var tabMap = { analyse: 0, carte: 1, comparaison: 2, sources: 3, apropos: -1, contact: -1 };
             if (tabs[tabMap[tabName]]) tabs[tabMap[tabName]].classList.add('active');
 
             if (tabName === 'carte') {
@@ -1263,13 +1392,19 @@
             card.style.borderColor = visible ? 'var(--primary)' : '';
         }
 
+        function slideAdvice(dir) {
+            var lista = document.getElementById('advice-list');
+            if (lista) lista.scrollBy({ left: dir * 285, behavior: 'smooth' });
+        }
+
         function initMap() {
             if (map) return;
             var mapEl = document.getElementById('map');
             if (!mapEl) return;
-            map = L.map('map').setView([48.6921, 6.1840], 12);
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+            map = L.map('map', { fadeAnimation: true }).setView([48.6921, 6.1840], 12);
+            L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>',
+                maxZoom: 19
             }).addTo(map);
 
             for (var key in villesData) {
@@ -1286,7 +1421,7 @@
 
         function extraireDonneesLien(lien) {
             if (lien.indexOf('leboncoin.fr') !== -1) {
-                return { prix: 220000, surface: 65, loyer: 750, ville: 'nancy' };
+                return { prix: 220000, surface: 65, loyer: 750, ville: 'Nancy' };
             } else if (lien.indexOf('seloger.com') !== -1) {
                 return { prix: 280000, surface: 80, loyer: 900, ville: 'sceaux' };
             }
@@ -1304,14 +1439,29 @@
                 document.getElementById('prix').value = data.prix;
                 document.getElementById('surface').value = data.surface;
                 document.getElementById('loyer').value = data.loyer;
-                document.getElementById('ville').value = data.ville;
-                alert("Les données ont été pré-remplies depuis le lien. Vérifiez et ajustez si nécessaire.");
+                document.getElementById('ville').value = data.ville;                alert("Les données ont été pré-remplies depuis le lien. Vérifiez et ajustez si nécessaire.");
             } else {
                 alert("Ce site n'autorise pas l'extraction automatique de ses données ou n'est pas encore pris en charge. Veuillez entrer les données manuellement.");
             }
         }
 
         function fmt(n) { return Math.round(n).toLocaleString('fr-FR') + ' EUR'; }
+
+        // Normalise une ville saisie librement en clé de villesData (ou null si inconnue)
+        function normalizeVille(v) {
+            if (!v) return null;
+            var s = String(v).trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+            if (s.indexOf('conquet') !== -1) return 'le-conquet';
+            for (var key in villesData) {
+                var name = villesData[key].name.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+                if (s === name || s === key.replace(/-/g, ' ') || name.indexOf(s) !== -1 || s.indexOf(name) !== -1) return key;
+            }
+            return null;
+        }
+        function villeDataFrom(v) {
+            var key = normalizeVille(v);
+            return key ? villesData[key] : null;
+        }
 
         function calculerRentabilite() {
             currentBien.prix = parseFloat(document.getElementById('prix').value) || 0;
@@ -1326,7 +1476,7 @@
             currentBien.dpe = document.getElementById('dpe').value;
             currentBien.travaux = document.getElementById('travaux').value;
 
-            var villeData = villesData[currentBien.ville];
+            var villeData = villeDataFrom(currentBien.ville);
 
             var dpeComment = dpeComments[currentBien.dpe] || dpeComments['non-renseigne'];
             document.getElementById('dpe-comment').style.display = 'block';
@@ -1379,11 +1529,19 @@
             document.getElementById('bd-cout-total').textContent = fmt(coutTotal);
             document.getElementById('bd-seuil').textContent = seuil !== null ? seuil + ' ans' : 'N/A (cash-flow annuel négatif)';
 
-            document.getElementById('prix-m2').textContent = villeData.prixM2 + ' EUR';
-            document.getElementById('tension-locative').textContent = villeData.tensionLocative + '/10';
-            document.getElementById('fourchette-loyers').textContent = villeData.fourchetteLoyers.min + ' - ' + villeData.fourchetteLoyers.max + ' EUR';
-            document.getElementById('risque-vacance').textContent = villeData.risqueVacance;
-            document.getElementById('ville-name').textContent = villeData.name;
+            if (villeData) {
+                document.getElementById('prix-m2').textContent = villeData.prixM2 + ' EUR';
+                document.getElementById('tension-locative').textContent = villeData.tensionLocative + '/10';
+                document.getElementById('fourchette-loyers').textContent = villeData.fourchetteLoyers.min + ' - ' + villeData.fourchetteLoyers.max + ' EUR';
+                document.getElementById('risque-vacance').textContent = villeData.risqueVacance;
+                document.getElementById('ville-name').textContent = villeData.name;
+            } else {
+                document.getElementById('prix-m2').textContent = 'N/C';
+                document.getElementById('tension-locative').textContent = 'N/C';
+                document.getElementById('fourchette-loyers').textContent = 'N/C';
+                document.getElementById('risque-vacance').textContent = 'N/C';
+                document.getElementById('ville-name').textContent = currentBien.ville || 'Ville inconnue';
+            }
 
             saveBien1();
             updateComparison();
@@ -1407,7 +1565,7 @@
             document.getElementById('surface').value = 70;
             document.getElementById('loyer').value = 800;
             document.getElementById('charges').value = 100;
-            document.getElementById('ville').value = 'nancy';
+            document.getElementById('ville').value = '';
             document.getElementById('taux').value = 3.5;
             document.getElementById('duree').value = 20;
             document.getElementById('apport').value = 50000;
@@ -1583,15 +1741,19 @@
 
             var c1 = computeBien(bien1);
             var c2 = computeBien(bien2);
-            var vd1 = villesData[bien1.ville] || villesData['nancy'];
-            var vd2 = villesData[bien2.ville] || villesData['nancy'];
+            var vd1 = villeDataFrom(bien1.ville);
+            var vd2 = villeDataFrom(bien2.ville);
 
             function seuilTxt(s) { return s !== null ? s.toFixed(1) + ' ans' : 'N/A'; }
             function cfTxt(cf) { return cf.toFixed(0) + ' EUR'; }
             function txt2(v) { return bien2Complet ? v : '-'; }
 
-            document.getElementById('comp-ville-1').textContent = vd1.name;
-            document.getElementById('comp-ville-2').textContent = vd2.name;
+            function vName(vd, fallback) { return vd ? vd.name : (fallback || 'Ville non répertoriée'); }
+            function vm2(vd) { return vd ? vd.prixM2.toLocaleString('fr-FR') + ' EUR' : 'N/C'; }
+            function vten(vd) { return vd ? vd.tensionLocative + '/10' : 'N/C'; }
+
+            document.getElementById('comp-ville-1').textContent = vName(vd1, bien1.ville);
+            document.getElementById('comp-ville-2').textContent = vName(vd2, bien2.ville);
             document.getElementById('comp-prix-1').textContent = bien1.prix.toLocaleString('fr-FR') + ' EUR';
             document.getElementById('comp-prix-2').textContent = bien2Complet ? bien2.prix.toLocaleString('fr-FR') + ' EUR' : '-';
             document.getElementById('comp-surface-1').textContent = bien1.surface + ' m2';
@@ -1608,10 +1770,10 @@
             document.getElementById('comp-cashflow-2').className = bien2Complet ? (c2.cashFlowMensuel > c1.cashFlowMensuel ? 'winner' : 'loser') : '';
             document.getElementById('comp-seuil-1').textContent = seuilTxt(c1.seuil);
             document.getElementById('comp-seuil-2').textContent = bien2Complet ? seuilTxt(c2.seuil) : '-';
-            document.getElementById('comp-prix-m2-1').textContent = vd1.prixM2.toLocaleString('fr-FR') + ' EUR';
-            document.getElementById('comp-prix-m2-2').textContent = vd2.prixM2.toLocaleString('fr-FR') + ' EUR';
-            document.getElementById('comp-tension-1').textContent = vd1.tensionLocative + '/10';
-            document.getElementById('comp-tension-2').textContent = vd2.tensionLocative + '/10';
+            document.getElementById('comp-prix-m2-1').textContent = vm2(vd1);
+            document.getElementById('comp-prix-m2-2').textContent = vm2(vd2);
+            document.getElementById('comp-tension-1').textContent = vten(vd1);
+            document.getElementById('comp-tension-2').textContent = vten(vd2);
 
             // Synthèse en colonnes Bien 1 / Bien 2 (vert = meilleur, rouge = moins bon)
             document.getElementById('syn-brute-1').textContent = c1.rentabiliteBrute.toFixed(2) + '%';
@@ -1631,15 +1793,130 @@
             document.getElementById('syn-seuil-1').className = s1v < s2v ? 'winner' : (s2v < s1v ? 'loser' : 'winner');
             document.getElementById('syn-seuil-2').className = s2v < s1v ? 'winner' : (s1v < s2v ? 'loser' : '');
 
-            document.getElementById('syn-prixm2-1').textContent = vd1.prixM2.toLocaleString('fr-FR') + ' EUR';
-            document.getElementById('syn-prixm2-2').textContent = vd2.prixM2.toLocaleString('fr-FR') + ' EUR';
-            document.getElementById('syn-prixm2-1').className = vd1.prixM2 <= vd2.prixM2 ? 'winner' : 'loser';
-            document.getElementById('syn-prixm2-2').className = vd2.prixM2 < vd1.prixM2 ? 'winner' : 'loser';
+            document.getElementById('syn-prixm2-1').textContent = vm2(vd1);
+            document.getElementById('syn-prixm2-2').textContent = vm2(vd2);
+            document.getElementById('syn-prixm2-1').className = (vd1 && vd2) ? (vd1.prixM2 <= vd2.prixM2 ? 'winner' : 'loser') : (vd1 ? 'winner' : '');
+            document.getElementById('syn-prixm2-2').className = (vd1 && vd2) ? (vd2.prixM2 < vd1.prixM2 ? 'winner' : 'loser') : (vd2 ? '' : '');
+        }
+
+        function escapeHtml(s) {
+            return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+        }
+
+        // ===== Compositions sauvegardées =====
+        function getCompos() { try { return JSON.parse(localStorage.getItem('bienCompos') || '[]'); } catch (e) { return []; } }
+        function setCompos(list) { try { localStorage.setItem('bienCompos', JSON.stringify(list)); } catch (e) {} }
+
+        function saveCompo() {
+            var b = {
+                prix: parseFloat(document.getElementById('comp-prix-2-input').value) || 0,
+                surface: parseFloat(document.getElementById('comp-surface-2-input').value) || 0,
+                loyer: parseFloat(document.getElementById('comp-loyer-2-input').value) || 0,
+                charges: parseFloat(document.getElementById('comp-charges-2-input').value) || 100,
+                ville: document.getElementById('comp-ville-2-input').value.trim(),
+                taux: 3.5, duree: 20
+            };
+            if (b.prix <= 0 || b.loyer <= 0) {
+                alert("Renseignez d'abord le prix et le loyer du Bien 2 ci-dessus, puis enregistrez la composition.");
+                return;
+            }
+            var comps = getCompos();
+            var name = document.getElementById('compo-name').value.trim() || ("Composition " + (comps.length + 1));
+            comps.push({ name: name, bien: b });
+            setCompos(comps);
+            document.getElementById('compo-name').value = '';
+            renderCompos();
+        }
+
+        function loadCompo(i) {
+            var comps = getCompos();
+            if (!comps[i]) return;
+            var b = comps[i].bien;
+            document.getElementById('comp-prix-2-input').value = b.prix;
+            document.getElementById('comp-surface-2-input').value = b.surface || '';
+            document.getElementById('comp-loyer-2-input').value = b.loyer;
+            document.getElementById('comp-charges-2-input').value = b.charges || 100;
+            document.getElementById('comp-ville-2-input').value = b.ville || '';
+            updateComparison();
+        }
+
+        function delCompo(i) {
+            var comps = getCompos();
+            comps.splice(i, 1);
+            setCompos(comps);
+            renderCompos();
+        }
+
+        function renderCompos() {
+            var track = document.getElementById('compo-track');
+            var table = document.getElementById('multi-table');
+            if (!track || !table) return;
+            var comps = getCompos();
+            track.innerHTML = '';
+            if (!comps.length) {
+                track.innerHTML = '<div class="compo-empty">Aucune composition enregistrée pour le moment : renseignez le Bien 2 ci-dessus, donnez-lui un nom puis cliquez sur Enregistrer.</div>';
+                table.innerHTML = '';
+                return;
+            }
+            var calcs = comps.map(function(c) { return computeBien(c.bien); });
+
+            comps.forEach(function(c, i) {
+                var calc = calcs[i];
+                var chip = document.createElement('div');
+                chip.className = 'compo-chip';
+                chip.innerHTML =
+                    '<h5><i class="fas fa-layer-group"></i>' + escapeHtml(c.name) + '</h5>' +
+                    '<div class="compo-stats">' +
+                        'Ville : ' + escapeHtml(c.bien.ville || 'Non renseignée') + '<br>' +
+                        'Prix : ' + fmt(c.bien.prix) + ' | Loyer : ' + fmt(c.bien.loyer) + '/mois<br>' +
+                        'Rentabilité brute : <strong>' + calc.rentabiliteBrute.toFixed(2) + '%</strong><br>' +
+                        'Breakeven : <strong>' + (calc.seuil !== null ? calc.seuil.toFixed(1) + ' ans' : 'N/A') + '</strong>' +
+                    '</div>' +
+                    '<div class="compo-btns">' +
+                        '<button class="btn" onclick="loadCompo(' + i + ')"><i class="fas fa-scale-balanced"></i> Comparer</button>' +
+                        '<button class="compo-del" onclick="delCompo(' + i + ')" title="Supprimer"><i class="fas fa-trash"></i></button>' +
+                    '</div>';
+                track.appendChild(chip);
+            });
+
+            // Tableau multi-compositions : on compare toutes les compositions enregistrées
+            function bestIdx(vals) {
+                var bi = -1, bv = null;
+                for (var i = 0; i < vals.length; i++) { if (vals[i] !== null && (bv === null || vals[i] > bv)) { bv = vals[i]; bi = i; } }
+                return bi;
+            }
+            function bestMinIdx(vals) {
+                var bi = -1, bv = null;
+                for (var i = 0; i < vals.length; i++) { if (vals[i] !== null && (bv === null || vals[i] < bv)) { bv = vals[i]; bi = i; } }
+                return bi;
+            }
+            var bBrut = bestIdx(calcs.map(function(c){ return c.rentabiliteBrute; }));
+            var bCf = bestIdx(calcs.map(function(c){ return c.cashFlowMensuel; }));
+            var bSe = bestMinIdx(calcs.map(function(c){ return c.seuil; }));
+            var bPrix = bestMinIdx(comps.map(function(c){ return c.bien.prix; }));
+
+            var html = '<thead><tr><th>Indicateur</th>';
+            comps.forEach(function(c) { html += '<th style="text-align:left;">' + escapeHtml(c.name) + '</th>'; });
+            html += '</tr></thead><tbody>';
+            html += '<tr><td>Ville</td>';
+            comps.forEach(function(c) { html += '<td>' + escapeHtml(c.bien.ville || 'Non renseignée') + '</td>'; });
+            html += '</tr><tr><td>Prix d&#39;achat</td>';
+            comps.forEach(function(c, i) { html += '<td class="' + (i === bPrix ? 'winner' : 'loser') + '">' + fmt(c.bien.prix) + '</td>'; });
+            html += '</tr><tr><td>Loyer mensuel</td>';
+            comps.forEach(function(c) { html += '<td>' + fmt(c.bien.loyer) + '</td>'; });
+            html += '</tr><tr><td>Rentabilité brute</td>';
+            comps.forEach(function(c, i) { html += '<td class="' + (i === bBrut ? 'winner' : 'loser') + '">' + calcs[i].rentabiliteBrute.toFixed(2) + '%</td>'; });
+            html += '</tr><tr><td>Cash-flow mensuel</td>';
+            comps.forEach(function(c, i) { html += '<td class="' + (i === bCf ? 'winner' : 'loser') + '">' + calcs[i].cashFlowMensuel.toFixed(0) + ' EUR</td>'; });
+            html += '</tr><tr><td>Breakeven</td>';
+            comps.forEach(function(c, i) { html += '<td class="' + (i === bSe ? 'winner' : 'loser') + '">' + (calcs[i].seuil !== null ? calcs[i].seuil.toFixed(1) + ' ans' : 'N/A') + '</td>'; });
+            html += '</tr></tbody>';
+            table.innerHTML = html;
         }
 
         document.addEventListener('DOMContentLoaded', function() {
             updateComparison();
-            // Mise à jour automatique du Bien 2 dès qu'un champ est modifié
+            renderCompos();            // Mise à jour automatique du Bien 2 dès qu'un champ est modifié
             ['comp-prix-2-input', 'comp-surface-2-input', 'comp-loyer-2-input', 'comp-charges-2-input'].forEach(function(id) {
                 var el = document.getElementById(id);
                 if (el) el.addEventListener('input', updateComparison);
