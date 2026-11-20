@@ -103,9 +103,8 @@
         .tab:hover { background: var(--border); }
         .tab.active { background: var(--primary); color: #ffffff; border-color: var(--primary); }
 
-        /* Badge "prototype" dans le bandeau de navigation */
+        /* Badge "prototype" dans le header */
         .proto-badge {
-            margin-left: auto;
             display: inline-flex;
             align-items: center;
             gap: 8px;
@@ -427,6 +426,16 @@
         .comp-table td.loser { font-weight: 700; color: #991b1b; background: #fef2f2; border: 1px solid #fecaca; border-radius: 6px; }
         .comparison-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
 
+        /* Questionnaire des objectifs */
+        .quiz-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 18px; }
+        .profile-card { border-left: 4px solid var(--primary); }
+        .profile-name { font-size: 1.6rem; font-weight: 700; color: var(--primary); margin-bottom: 8px; }
+        .profile-desc { font-size: 0.95rem; color: var(--dark); line-height: 1.55; }
+        .conseils-perso ul { padding-left: 20px; color: var(--dark); font-size: 0.92rem; line-height: 1.7; }
+        .conseils-perso li { margin-bottom: 8px; }
+        .conseils-perso strong { color: var(--primary); }
+        .profile-score { font-size: 0.8rem; color: var(--secondary); margin-top: 10px; }
+
         /* Compositions sauvegardées (bande défilante + comparateur multi) */
         .compo-track {
             display: flex;
@@ -592,6 +601,7 @@
                 <p>Outil d'analyse de rentabilité pour investisseurs</p>
             </div>
             <div class="header-links">
+                <div class="proto-badge" title="Site en cours de développement"><i class="fas fa-flask"></i> Ce site est un prototype</div>
                 <div class="header-link" onclick="goToTab('apropos')"><i class="fas fa-circle-info"></i> A propos</div>
                 <div class="header-link" onclick="goToTab('contact')"><i class="fas fa-envelope"></i> Nous contacter</div>
             </div>
@@ -600,11 +610,11 @@
 
     <!-- Banner de navigation collant -->
     <nav class="tabs" id="main-nav">
-        <div class="tab active" onclick="goToTab('analyse')"><i class="fas fa-calculator"></i> Analyser un bien</div>
+        <div class="tab active" onclick="goToTab('objectifs')"><i class="fas fa-bullseye"></i> Mes objectifs</div>
+        <div class="tab" onclick="goToTab('analyse')"><i class="fas fa-calculator"></i> Analyser un bien</div>
         <div class="tab" onclick="goToTab('carte')"><i class="fas fa-map-location-dot"></i> Carte &amp; Quartiers</div>
         <div class="tab" onclick="goToTab('comparaison')"><i class="fas fa-scale-balanced"></i> Comparaison</div>
         <div class="tab" onclick="goToTab('sources')"><i class="fas fa-book"></i> Sources &amp; Infos</div>
-        <div class="proto-badge" title="Site en cours de développement"><i class="fas fa-flask"></i> Ce site est un prototype</div>
     </nav>
 
     <main>
@@ -618,8 +628,70 @@
             </div>
         </div>
 
+        <!-- Onglet Mes objectifs -->
+        <div id="objectifs" class="tab-content active">
+            <div class="form-section">
+                <h2>Mes objectifs d'investissement</h2>
+                <p style="color: var(--secondary); margin-bottom: 20px;">Commençons par comprendre ce que vous cherchez. Répondez à ces questions (30 secondes) : le site en déduira votre profil d'investisseur et vous proposera des conseils adaptés.</p>
+
+                <div class="quiz-grid" id="quiz-grid"></div>
+                <div style="display: flex; gap: 10px; margin-top: 20px; flex-wrap: wrap;">
+                    <button class="btn" onclick="calculerProfil()">
+                        <i class="fas fa-wand-magic-sparkles"></i> Découvrir mon profil
+                    </button>
+                    <button class="btn btn-secondary" onclick="resetQuiz()">
+                        <i class="fas fa-redo"></i> Recommencer
+                    </button>
+                </div>
+
+                <div id="profile-result" style="display: none;" class="mt-20">
+                    <div class="card profile-card">
+                        <h3>Votre profil d'investisseur locatif</h3>
+                        <div class="profile-name" id="profile-name">-</div>
+                        <div class="profile-desc" id="profile-desc">-</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-section">
+                <h2>Les grands profils de l'investissement locatif</h2>
+                <p style="color: var(--secondary); margin-bottom: 15px;">Il n'y a pas de bon ou de mauvais profil : l'important est que la stratégie corresponde à votre situation et à votre tolérance au risque.</p>
+                <details class="calc-item">
+                    <summary><i class="fas fa-shield-halved" style="color: var(--secondary);"></i> Profil défensif — la sécurité avant tout</summary>
+                    <div class="calc-body">
+                        Vous priorisez la régularité et le risque zéro (ou presque) : biens standards dans des quartiers recherchés, peu de travaux, cash-flow positif dès le départ, même s'il est modeste. Le patrimoine se construit lentement mais sainement, avec de la vacance locative rare.<span class="calc-formula">Indicateur clé : la stabilité du cash-flow mensuel plutôt que la rentabilité brute.</span>
+                    </div>
+                </details>
+                <details class="calc-item">
+                    <summary><i class="fas fa-scale-balanced" style="color: var(--secondary);"></i> Profil équilibré — le meilleur compromis</summary>
+                    <div class="calc-body">
+                        Vous acceptez un peu de travaux ou un emplacement légèrement moins coté en échange d'une meilleure rentabilité. Objectif : un cash-flow proche de zéro ou légèrement positif, une décote raisonnable à l'achat et un bien facile à revendre.<span class="calc-formula">Indicateur clé : rentabilité nette supérieure à 4-5% avec un DPE correct.</span>
+                    </div>
+                </details>
+                <details class="calc-item">
+                    <summary><i class="fas fa-arrow-trend-up" style="color: var(--secondary);"></i> Profil dynamique — la performance recherchée</summary>
+                    <div class="calc-body">
+                        Vous cherchez la performance : biens à rénover achetés en décote (jusqu'à 15-20% sous le marché), travaux assumés et planifiés, location meublée (LMNP) pour booster les loyers. Le cash-flow peut démarrer négatif le temps des travaux puis reprendre fort.<span class="calc-formula">Indicateur clé : la plus-value potentielle (valeur après travaux / prix d'achat).</span>
+                    </div>
+                </details>
+                <details class="calc-item">
+                    <summary><i class="fas fa-fire" style="color: var(--secondary);"></i> Profil agressif — le levier maximal</summary>
+                    <div class="calc-body">
+                        Vous visez un rendement maximal et acceptez une forte exposition : endettement élevé, colocation ou meublé de tourisme, biens avec un potentiel de revalorisation fort mais incertain (quartiers en mutation, projets structurants). Cette approche exige des réserves de trésorerie solides et une véritable expérience.<span class="calc-formula">Indicateur clé : TRI (taux de rendement interne) global, cash-flow toléré négatif sur une période courte.</span>
+                    </div>
+                </details>
+            </div>
+
+            <div class="form-section" id="conseils-perso-section">
+                <h2>Conseils personnalisés selon votre profil</h2>
+                <div id="conseils-perso" class="conseils-perso">
+                    <p style="color: var(--secondary);">Répondez au questionnaire ci-dessus (onglet "Mes objectifs") pour afficher des conseils adaptés à votre profil.</p>
+                </div>
+            </div>
+        </div>
+
         <!-- Onglet Analyse -->
-        <div id="analyse" class="tab-content active">
+        <div id="analyse" class="tab-content">
             <div class="form-section">
                 <h2>Analyser un bien immobilier</h2>
                 <div class="form-grid">
@@ -1203,6 +1275,7 @@
                 <div class="footer-col">
                     <h4>Nos fonctionnalités</h4>
                     <ul>
+                        <li><a onclick="goToTab('objectifs')">Mes objectifs</a></li>
                         <li><a onclick="goToTab('analyse')">Analyser un bien</a></li>
                         <li><a onclick="goToTab('carte')">Carte &amp; Quartiers</a></li>
                         <li><a onclick="goToTab('comparaison')">Comparaison de biens</a></li>
@@ -1375,7 +1448,7 @@
             var target = document.getElementById(tabName);
             if (target) target.classList.add('active');
             // Active l'onglet correspondant dans la nav
-            var tabMap = { analyse: 0, carte: 1, comparaison: 2, sources: 3, apropos: -1, contact: -1 };
+            var tabMap = { objectifs: 0, analyse: 1, carte: 2, comparaison: 3, sources: 4, apropos: -1, contact: -1 };
             if (tabs[tabMap[tabName]]) tabs[tabMap[tabName]].classList.add('active');
 
             if (tabName === 'carte') {
@@ -1803,6 +1876,119 @@
             return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
         }
 
+        // ===== Questionnaire "Mes objectifs" =====
+        var quizQuestions = [
+            { id: 'objQ1', q: "Quel est votre objectif principal ?", opts: [
+                ["Créer un revenu complémentaire stable dès maintenant", 0],
+                ["Construire un patrimoine à transmettre ou à vendre plus tard", 1],
+                ["Générer un maximum de cash-flow, même en prenant des risques", 2],
+                ["Acquérir à terme ma résidence principale grâce à la location", 1]
+            ]},
+            { id: 'objQ2', q: "Sur quel horizon envisagez-vous de conserver vos biens ?", opts: [
+                ["Moins de 3 ans (revente rapide envisagée)", 2],
+                ["Entre 3 et 10 ans", 1],
+                ["Plus de 10 ans (long terme)", 0]
+            ]},
+            { id: 'objQ3', q: "Quand vous comparez deux biens, qu'est-ce qui compte le plus ?", opts: [
+                ["La sécurité : je préfère un rendement moyen sans mauvaise surprise", 0],
+                ["Un équilibre entre risque et rendement", 1],
+                ["Le rendement maximal, même si le risque est plus élevé", 2]
+            ]},
+            { id: 'objQ4', q: "Quelle charge de travail acceptez-vous (travaux, gestion, locataires) ?", opts: [
+                ["Très peu : je veux un bien clé en main", 0],
+                ["Moyenne : quelques travaux de rafraîchissement me vont", 1],
+                ["Élevée : je suis prêt à gérer une grosse rénovation", 2]
+            ]},
+            { id: 'objQ5', q: "Accepteriez-vous un cash-flow mensuel négatif pendant un moment ?", opts: [
+                ["Non, jamais : le bien doit s'autofinancer dès le départ", 0],
+                ["Oui, un peu, le temps de faire les travaux", 1],
+                ["Oui, largement, si la plus-value à la revente est au rendez-vous", 2]
+            ]},
+            { id: 'objQ6', q: "Quelle épargne mensuelle pouvez-vous ajouter si nécessaire ?", opts: [
+                ["Moins de 200 EUR", 0],
+                ["Entre 200 et 700 EUR", 1],
+                ["Plus de 700 EUR", 2]
+            ]}
+        ];
+
+        var profilDefini = [
+            { key: 'defensif', nom: "Défensif", desc: "Votre priorité est la sécurité et la régularité. Vous êtes fait pour des biens standards dans des quartiers recherchés, sans gros travaux, avec un cash-flow positif immédiat, même modeste.", conseils: [
+                'Ciblez des villes avec une tension locative élevée (voir l\'onglet <strong>Carte &amp; Quartiers</strong>) pour limiter la vacance locative.',
+                'Écartez les DPE F et G : risque de travaux imposés et de vacance prolongée (commencez par un DPE C ou mieux dans le champ dédié).',
+                'Visez un cash-flow mensuel positif dès le calcul : ajustez le loyer et l\'apport dans l\'onglet <strong>Analyser un bien</strong> jusqu\'à l\'obtenir.',
+                '<strong>Courtier en prêt</strong> : avec un profil prudent, négocier le taux fait souvent la différence entre cash-flow positif et négatif.',
+                'Constituez une réserve de précaution d\'au moins 6 mois de charges et mensualités avant votre premier achat.'
+            ]},
+            { key: 'equilibre', nom: "Équilibré", desc: "Vous cherchez le meilleur rapport risque/rendement : un peu de travaux ou un emplacement légèrement moins coté, en échange d'une meilleure rentabilité et d'un bien facile à revendre.", conseils: [
+                'Cherchez la décote : comparez le prix demandé au prix/m² du quartier (onglet <strong>Carte &amp; Quartiers</strong>) et négociez en vous appuyant sur les ventes réelles (DVF).',
+                'Un DPE D ou E acceptable, à condition de budgéter l\'isolation dans l\'enveloppe de travaux du formulaire.',
+                'Visez une rentabilité nette d\'au moins 4-5% : le calculateur vous l\'affiche dans les KPI après chaque simulation.',
+                'Le statut LMNP peut améliorer nettement votre fiscalité : consultez l\'onglet <strong>Sources &amp; Infos</strong> avant de vous décider.',
+                'Testez plusieurs compositions dans l\'onglet <strong>Comparaison</strong> : enregistrez-les puis comparez-les côte à côte.'
+            ]},
+            { key: 'dynamique', nom: "Dynamique", desc: "Vous cherchez la performance : biens à rénover achetés en décote, travaux planifiés, location meublée pour booster les loyers. Vous acceptez un démarrage sous tension si la trajectoire est bonne.", conseils: [
+                'Ciblez les biens à rafraîchir : la décote à l\'achat est votre marge de sécurité. Prévoyez l\'enveloppe de travaux dans le formulaire pour des calculs réalistes.',
+                'La location meublée (LMNP) peut augmenter le loyer de 10 à 30% et lisser la fiscalité via l\'amortissement (voir Sources &amp; Infos).',
+                'Intégrez bien les frais : dans une rénovation, le coût réel dépasse souvent le budget initial de 10-20%. Gardez cette marge.',
+                'Surveillez la <strong>tendance du quartier</strong> (projets, transports) sur la carte : la plus-value se fait au moment de l\'achat.',
+                'Assumez un cash-flow légèrement négatif pendant les travaux, mais planifiez la date de mise en location : c\'est votre scénario de sortie.'
+            ]},
+            { key: 'agressif', nom: "Agressif", desc: "Vous visez un rendement maximal, quitte à porter un risque élevé : endettement fort, colocation ou meublé de tourisme, quartiers en mutation. Cette approche exige des réserves et de l'expérience.", conseils: [
+                'Constituez un matelas de trésorerie (6-12 mois de mensualités + travaux) : c\'est ce qui distingue un investisseur audacieux d\'un surendetté.',
+                'Le coliving / colocation augmente fortement le rendement mais accélère aussi la fatigue de gestion : chiffrez bien votre temps.',
+                'Vérifiez les règlements locaux (autorisations de location courte durée) avant tout projet de Airbnb : dans plusieurs grandes villes, elles sont strictement encadrées.',
+                'Le spread (écart entre rendement et coût du crédit) est le moteur de ce profil ; testez-le dans l\'onglet <strong>Analyser un bien</strong> en variant taux et durée.',
+                'Diversifiez géographiquement (plusieurs villes de la carte) plutôt que tout concentrer sur un seul marché.'
+            ]}
+        ];
+
+        function renderQuiz() {
+            var grid = document.getElementById('quiz-grid');
+            if (!grid) return;
+            var html = '';
+            quizQuestions.forEach(function(item, idx) {
+                html += '<div class="form-group"><label>' + (idx + 1) + '. ' + escapeHtml(item.q) + '</label><select id="' + item.id + '"><option value="">Choisissez...</option>';
+                item.opts.forEach(function(o, j) {
+                    html += '<option value="' + j + '">' + escapeHtml(o[0]) + '</option>';
+                });
+                html += '</select></div>';
+            });
+            grid.innerHTML = html;
+        }
+
+        function calculerProfil() {
+            var score = 0, toutRepondu = true;
+            quizQuestions.forEach(function(item) {
+                var sel = document.getElementById(item.id);
+                if (!sel || sel.value === '') { toutRepondu = false; return; }
+                score += item.opts[parseInt(sel.value)][1];
+            });
+            if (!toutRepondu) {
+                alert("Merci de répondre à toutes les questions pour déterminer votre profil.");
+                return;
+            }
+            var idx = score <= 3 ? 0 : (score <= 6 ? 1 : (score <= 9 ? 2 : 3));
+            var p = profilDefini[idx];
+            document.getElementById('profile-result').style.display = 'block';
+            document.getElementById('profile-name').textContent = "Profil " + p.nom;
+            document.getElementById('profile-desc').textContent = p.desc;
+
+            var html = '<ul>';
+            p.conseils.forEach(function(c) { html += '<li>' + c + '</li>'; });
+            html += '</ul>';
+            document.getElementById('conseils-perso').innerHTML = html;
+            document.getElementById('profile-result').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function resetQuiz() {
+            quizQuestions.forEach(function(item) {
+                var sel = document.getElementById(item.id);
+                if (sel) sel.value = '';
+            });
+            document.getElementById('profile-result').style.display = 'none';
+            document.getElementById('conseils-perso').innerHTML = '<p style="color: var(--secondary);">Répondez au questionnaire ci-dessus (onglet "Mes objectifs") pour afficher des conseils adaptés à votre profil.</p>';
+        }
+
         // ===== Compositions sauvegardées =====
         function getCompos() { try { return JSON.parse(localStorage.getItem('bienCompos') || '[]'); } catch (e) { return []; } }
         function setCompos(list) { try { localStorage.setItem('bienCompos', JSON.stringify(list)); } catch (e) {} }
@@ -1916,7 +2102,8 @@
 
         document.addEventListener('DOMContentLoaded', function() {
             updateComparison();
-            renderCompos();            // Mise à jour automatique du Bien 2 dès qu'un champ est modifié
+            renderCompos();
+            renderQuiz();            // Mise à jour automatique du Bien 2 dès qu'un champ est modifié
             ['comp-prix-2-input', 'comp-surface-2-input', 'comp-loyer-2-input', 'comp-charges-2-input'].forEach(function(id) {
                 var el = document.getElementById(id);
                 if (el) el.addEventListener('input', updateComparison);
