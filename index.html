@@ -426,6 +426,41 @@
         .comp-table td.loser { font-weight: 700; color: #991b1b; background: #fef2f2; border: 1px solid #fecaca; border-radius: 6px; }
         .comparison-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
 
+        /* Mon projet : verdict, statuts fiscaux, typologies */
+        .verdict-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 18px;
+            border-radius: 10px;
+            font-weight: 700;
+            font-size: 1rem;
+            margin: 10px 0;
+        }
+        .verdict-go { background: #f0fdf4; border: 1px solid #86efac; color: #166534; }
+        .verdict-mid { background: #fffbeb; border: 1px solid #fde68a; color: #92400e; }
+        .verdict-no { background: #fef2f2; border: 1px solid #fecaca; color: #991b1b; }
+        .projet-actions { margin-top: 12px; }
+        .projet-actions li { margin-bottom: 8px; font-size: 0.92rem; line-height: 1.55; }
+        .projet-actions { padding-left: 20px; color: var(--dark); }
+        .statut-grid, .typo-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px; }
+        .statut-card, .typo-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 15px;
+        }
+        .statut-card h4, .typo-card h4 { display: flex; align-items: center; gap: 8px; font-size: 0.98rem; margin-bottom: 8px; color: var(--primary); }
+        .statut-card ul, .typo-card ul { padding-left: 16px; font-size: 0.85rem; color: var(--dark); line-height: 1.55; }
+        .statut-card li, .typo-card li { margin-bottom: 5px; }
+        .statut-impot { font-size: 0.82rem; color: var(--secondary); margin-top: 10px; }
+        .projet-summary { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        .projet-summary td { padding: 8px 0; border-bottom: 1px solid var(--border); font-size: 0.92rem; }
+        .projet-summary td:last-child { text-align: right; font-weight: 700; white-space: nowrap; }
+        .diversification-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 10px; padding: 15px; margin-bottom: 12px; }
+        .diversification-card h4 { font-size: 0.95rem; margin-bottom: 6px; color: var(--primary); display: flex; gap: 8px; align-items: center; }
+        .diversification-card p { font-size: 0.87rem; color: var(--dark); line-height: 1.55; }
+
         /* Questionnaire des objectifs */
         .quiz-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 18px; }
         .profile-card { border-left: 4px solid var(--primary); }
@@ -615,6 +650,7 @@
         <div class="tab" onclick="goToTab('carte')"><i class="fas fa-map-location-dot"></i> Carte &amp; Quartiers</div>
         <div class="tab" onclick="goToTab('comparaison')"><i class="fas fa-scale-balanced"></i> Comparaison</div>
         <div class="tab" onclick="goToTab('sources')"><i class="fas fa-book"></i> Sources &amp; Infos</div>
+        <div class="tab" onclick="goToTab('projet')"><i class="fas fa-diagram-project"></i> Mon projet</div>
     </nav>
 
     <main>
@@ -1051,6 +1087,17 @@
             </div>
 
             <div class="form-section">
+                <h2>Étude de marché locale</h2>
+                <p style="color: var(--secondary); margin-bottom: 15px;">Découvrez ce qui se loue et se vend le plus dans la ville choisie : prix au m2 et loyers estimés par typologie de bien. Pré-remplissez le Bien 2 en un clic depuis une ligne du tableau.</p>
+                <div style="display: flex; gap: 10px; margin-bottom: 15px; flex-wrap: wrap;">
+                    <input id="marche-ville" list="villes-list" autocomplete="off" placeholder="Ville (ex : Nancy)" style="flex: 1; min-width: 220px; padding: 10px 16px; border: 1px solid var(--border); border-radius: 999px; font-size: 0.95rem;">
+                    <button class="btn" onclick="renderMarche()"><i class="fas fa-chart-column"></i> Analyser le marché</button>
+                </div>
+                <div class="multi-table-wrap"><table class="comp-table" id="marche-table"></table></div>
+                <p style="margin-top: 10px; color: var(--secondary); font-size: 0.8rem;">Estimations indicatives dérivées des moyennes de la ville (prix au m2 et loyer médian d'un T2). Non exhaustif : consultez les ventes réelles des sources ci-dessous pour affiner. Ce module est prêt à être branché sur des données de marché en temps réel (API DVF) dans une prochaine version.</p>
+            </div>
+
+            <div class="form-section">
                 <h2>Synthèse de la comparaison</h2>
                 <p style="color: var(--secondary); margin-bottom: 20px;">Les indicateurs sont alignés en colonnes (Bien 1 / Bien 2). La meilleure valeur de chaque ligne est mise en évidence.</p>
                 <table class="comp-table">
@@ -1183,41 +1230,26 @@
                     </div>
                 </div>
 
-                <h3 style="margin: 30px 0 20px 0;">Dynamisme des zones</h3>
-                <div class="article-list">
-                    <div class="article-item">
-                        <h4>Nancy - Dynamisme de la ville</h4>
-                        <p>Pourquoi Nancy attire toujours plus : progression des prix et attractivité de la métropole du Grand Nancy. <a href="https://blog.iadfrance.fr/actualites/actualites-immobilieres/hausse-des-prix-pourquoi-nancy-attire-toujours-plus-en-2025/" class="article-link" target="_blank">Lire l'article (iad, 2025)</a></p>
-                        <p>Prix immobilier à Nancy : les clés du marché (délais de vente, tendances). <a href="https://www.mysweetimmo.com/2025/01/03/prix-immobilier-nancy-les-cles-du-marche-en-janvier-2025/" class="article-link" target="_blank">Lire l'article (MySweetimmo, janvier 2025)</a></p>
-                        <p>Marché immobilier à Nancy : redressement en 2024 et perspectives. <a href="https://www.imkiz.com/blog-immobilier/evolution-des-prix-marche-immobilier-nancy" class="article-link" target="_blank">Lire l'article (Imkiz)</a></p>
-                        <p>Nouveau trolleybus de Nancy : chantier structurant pour la mobilité de l'agglomération. <a href="https://fr.wikipedia.org/wiki/Nouveau_trolleybus_de_Nancy" class="article-link" target="_blank">Voir la fiche (Wikipédia, sources de presse locales)</a></p>
-                        <p>Prix moyen au m2 à Nancy (données notaires et DGFiP). <a href="https://www.paruvendu.fr/immobilier/prix-m2/nancy/" class="article-link" target="_blank">Consulter les données (ParuVendu, 2025)</a></p>
+                <h3 style="margin: 30px 0 20px 0;">Données sur votre ville ou zone</h3>
+                <div class="article-item">
+                    <p style="margin-bottom: 15px; color: var(--secondary); font-size: 0.9rem;">Saisissez une ville (et son code postal pour plus de précision) : les liens ci-dessous s'ouvrent directement sur les données récentes de votre zone (ventes réelles, prix au m2, actualités locales).</p>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="zone-ville">Ville</label>
+                            <input type="text" id="zone-ville" placeholder="Ex : Bordeaux" />
+                        </div>
+                        <div class="form-group">
+                            <label for="zone-cp">Code postal (optionnel)</label>
+                            <input type="text" id="zone-cp" placeholder="Ex : 33000" />
+                        </div>
                     </div>
-                    <div class="article-item">
-                        <h4>Douai - Dynamisme de la ville</h4>
-                        <p>Marché immobilier à Douai en 2025 : tendances, prix et opportunités. <a href="https://www.orpi.com/douai/actualites/marche-immobilier-a-douai-en-2025-tendances-prix-et-opportunites" class="article-link" target="_blank">Lire l'article (Orpi Douai, 2025)</a></p>
-                        <p>Programme "Cœur de ville" : réhabilitation du centre-ville et des commerces. <a href="https://www.douai.fr/coeur-de-ville" class="article-link" target="_blank">Voir le programme (Ville de Douai)</a></p>
-                        <p>Évolution des prix au m2 à Douai d'après les ventes réelles (DVF, 2022-2025). <a href="https://www.immovrai.com/prix-immobilier/hauts-de-france/nord/59509-douai" class="article-link" target="_blank">Consulter les données (Immovrai / DVF)</a></p>
-                        <p>Grands projets urbains présentés dans le magazine municipal "Douai, notre ville". <a href="https://www.douai.fr/sites/default/files/2025-02/20250130_COM_Douainotreville-mars2025_WEB.pdf" class="article-link" target="_blank">Lire le magazine (Ville de Douai, mars 2025)</a></p>
-                        <p>Données de ventes officielles (cadastre / DVF) pour Douai. <a href="https://www.immo-dvf.fr/prix-immobilier/hauts-de-france/nord/douai-59500/" class="article-link" target="_blank">Consulter les données (Immo-DVF)</a></p>
-                    </div>
-                    <div class="article-item">
-                        <h4>Sceaux - Dynamisme de la ville</h4>
-                        <p>Immobilier à Sceaux : des prix élevés mais une demande toujours forte. <a href="https://www.pap.fr/actualites/immobilier-a-sceaux-des-prix-tres-eleves-mais-toujours-aussi-desire/a27127" class="article-link" target="_blank">Lire l'article (PAP.fr)</a></p>
-                        <p>Grand Paris Express : avancement de la ligne 15 Ouest (tunnelier Tiphaine, proche de Sceaux). <a href="https://www.hauts-de-seine.fr/toutes-les-actualites/detail/ligne-15-ouest-tiphaine-sur-la-ligne-de-depart" class="article-link" target="_blank">Lire l'article (Conseil départemental des Hauts-de-Seine)</a></p>
-                        <p>Ligne 15 du métro de Paris : calendrier, gares et impacts sur le territoire. <a href="https://fr.wikipedia.org/wiki/Ligne_15_du_m%C3%A9tro_de_Paris" class="article-link" target="_blank">Voir la fiche (Wikipédia, sources de presse)</a></p>
-                        <p>Prix moyen au m2 à Sceaux (données notaires et DGFiP). <a href="https://www.paruvendu.fr/immobilier/prix-m2/sceaux-92330/" class="article-link" target="_blank">Consulter les données (ParuVendu, 2025)</a></p>
-                        <p>Ventes réelles par quartier à Sceaux (DVF). <a href="https://www.immovrai.com/prix-immobilier/ile-de-france/hauts-de-seine/92339-sceaux" class="article-link" target="_blank">Consulter les données (Immovrai / DVF)</a></p>
-                    </div>
-                    <div class="article-item">
-                        <h4>Le Conquet - Dynamisme de la ville</h4>
-                        <p>Le Conquet : des projets importants entre travaux et ambitions touristiques. <a href="https://quimper.maville.com/actu/actudet_-un-conseil-municipal-charge-pour-le-conquet-entre-travaux-et-ambitions-touristiques_dep-7495455_actu.Htm" class="article-link" target="_blank">Lire l'article (maville.com / Ouest-France)</a></p>
-                        <p>Feu vert pour les travaux du port du Conquet : investissements dans les infrastructures. <a href="https://www.lemoniteur.fr/article/finistere-fe-vert-pour-les-travaux-port-du-conquet.70469" class="article-link" target="_blank">Lire l'article (Le Moniteur)</a></p>
-                        <p>Prix moyen au m2 au Conquet (données notaires et DGFiP). <a href="https://www.paruvendu.fr/immobilier/prix-m2/le-conquet-29217/" class="article-link" target="_blank">Consulter les données (ParuVendu, 2025)</a></p>
-                        <p>Évolution récente des prix au Conquet : baisse constatée entre 2023 et 2025. <a href="https://www.orpi.com/prix-immobilier/le-conquet" class="article-link" target="_blank">Consulter les données (Orpi, 2025)</a></p>
-                        <p>Estimations de prix au m2 au Conquet par quartier. <a href="https://www.meilleursagents.com/prix-immobilier/le-conquet-29217/" class="article-link" target="_blank">Consulter les données (MeilleursAgents)</a></p>
-                    </div>
+                    <button class="btn" onclick="renderZoneLinks()" style="margin-top: 5px;"><i class="fas fa-magnifying-glass"></i> Afficher les sources</button>
+                    <div id="zone-links" class="source-list" style="margin-top: 20px;"></div>
                 </div>
+
+                <h3 style="margin: 30px 0 20px 0;">Bibliographie : au bon moment du parcours</h3>
+                <p style="margin-bottom: 20px; color: var(--secondary); font-size: 0.9rem;">Classée selon l'avancement de votre projet, pour lire la bonne ressource au bon moment.</p>
+                <div class="article-list" id="biblio-list"></div>
             </div>
         </div>
 
@@ -1234,6 +1266,38 @@
                         <p style="margin-top: 10px;">Ce que nous souhaitons apporter aux potentiels acheteurs : de la transparence et du recul. Il est important de noter que toutes les données affichées sont des estimations issues de sources publiques ; elles sont indicatives, parfois incomplètes, et ne remplaceront jamais une étude personnalisée. Notre rôle est d'ordonner l'information et de donner des points de repère, pas de délivrer un conseil en investissement.</p>
                         <p style="margin-top: 10px; font-size: 0.85rem; color: var(--secondary);">Ce texte n'est pas définitif, des changements peuvent survenir à tout moment.</p>
                     </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Onglet Mon projet -->
+        <div id="projet" class="tab-content">
+            <div class="form-section">
+                <h2>Mon projet : synthèse et viabilité</h2>
+                <p style="color: var(--secondary); margin-bottom: 20px;">Cette section rassemble automatiquement vos données : le profil défini dans l'onglet "Mes objectifs" et le bien analysé dans l'onglet "Analyser un bien". Rien à ressaisir.</p>
+                <div id="projet-content"></div>
+            </div>
+
+            <div class="form-section">
+                <h2>Choisir son statut fiscal</h2>
+                <p style="color: var(--secondary); margin-bottom: 15px;">Le régime fiscal choisi peut faire sortir votre impôt de plusieurs dizaines d'euros de marge par mois. Voici une projection indicative pour votre bien analysé (règles 2026, en évolution législative : vérifiez les seuils en vigueur avant de vous engager).</p>
+                <div class="multi-table-wrap"><table class="comp-table" id="fiscal-table"></table></div>
+                <div class="statut-grid mt-20" id="statut-grid"></div>
+                <p style="font-size: 0.75rem; color: var(--secondary); margin-top: 15px;">Estimations simplifiées à titre indicatif (TMI de 30%, forfaits et amortissements standards). Elles ne remplacent pas une validation par un expert-comptable ou votre centre des impôts : le régime optimal dépend de tous vos revenus.</p>
+            </div>
+
+            <div class="form-section">
+                <h2>Typologies de biens : avantages et points de vigilance</h2>
+                <p style="color: var(--secondary); margin-bottom: 15px;">Chaque typologie sert un profil d'investisseur différent. Comparez avec ce que le questionnaire a dit de vous.</p>
+                <div class="typo-grid" id="typo-grid"></div>
+            </div>
+
+            <div class="form-section">
+                <h2>Et si je diversifiais à apport égal ?</h2>
+                <p style="color: var(--secondary); margin-bottom: 15px;">Avec le même apport et la même capacité d'emprunt, plusieurs scénarios existent. Ce sont des pistes à explorer, pas des recommandations : vérifiez chacune dans le comparateur avant de trancher.</p>
+                <div id="diversification-content"></div>
+                <div style="display: flex; gap: 10px; margin-top: 15px; flex-wrap: wrap;">
+                    <button class="btn btn-secondary" onclick="goToTab('comparaison')"><i class="fas fa-scale-balanced"></i> Comparer des scénarios</button>
                 </div>
             </div>
         </div>
@@ -1280,6 +1344,7 @@
                         <li><a onclick="goToTab('carte')">Carte &amp; Quartiers</a></li>
                         <li><a onclick="goToTab('comparaison')">Comparaison de biens</a></li>
                         <li><a onclick="goToTab('sources')">Sources &amp; Infos</a></li>
+                        <li><a onclick="goToTab('projet')">Mon projet</a></li>
                     </ul>
                 </div>
                 <div class="footer-col">
@@ -1448,13 +1513,14 @@
             var target = document.getElementById(tabName);
             if (target) target.classList.add('active');
             // Active l'onglet correspondant dans la nav
-            var tabMap = { objectifs: 0, analyse: 1, carte: 2, comparaison: 3, sources: 4, apropos: -1, contact: -1 };
+            var tabMap = { objectifs: 0, analyse: 1, carte: 2, comparaison: 3, sources: 4, projet: 5, apropos: -1, contact: -1 };
             if (tabs[tabMap[tabName]]) tabs[tabMap[tabName]].classList.add('active');
 
             if (tabName === 'carte') {
                 initMap();
                 if (map) setTimeout(function() { map.invalidateSize(); }, 50);
             }
+            if (tabName === 'projet') renderProjet();
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
@@ -1969,6 +2035,7 @@
             }
             var idx = score <= 3 ? 0 : (score <= 6 ? 1 : (score <= 9 ? 2 : 3));
             var p = profilDefini[idx];
+            try { localStorage.setItem('monProfil', String(idx)); } catch (e) {}
             document.getElementById('profile-result').style.display = 'block';
             document.getElementById('profile-name').textContent = "Profil " + p.nom;
             document.getElementById('profile-desc').textContent = p.desc;
@@ -1987,6 +2054,180 @@
             });
             document.getElementById('profile-result').style.display = 'none';
             document.getElementById('conseils-perso').innerHTML = '<p style="color: var(--secondary);">Répondez au questionnaire ci-dessus (onglet "Mes objectifs") pour afficher des conseils adaptés à votre profil.</p>';
+        }
+
+        // ===== Section "Mon projet" =====
+        var typologiesData = [
+            { nom: "Appartement", icon: "fa-building", force: "Le format le plus simple à louer et à revendre ; demande constante en ville ; charges souvent prévisibles.", vigilance: "Copropriété : charges imprévues (ravalement, toiture) ; attention aux règlements (Airbnb parfois interdit).", profil: "Tous les profils, c'est le point d'entrée le plus sûr." },
+            { nom: "Maison", icon: "fa-house", force: "Loue bien aux familles (baux longs, vacance faible) ; potentiel de plus-value sur le terrain ; pas de charges de copropriété.", vigilance: "Entretien plus lourd (toiture, jardin) ; ticket d'entrée plus élevé ; dispersion des appels de fonds.", profil: "Profil défensif ou équilibré en zone pavillonnaire." },
+            { nom: "Immeuble", icon: "fa-city", force: "Plusieurs appartements sous un seul ticket : rendement net supérieur (de 1 à 3 points) et vrai levier de valorisation.", vigilance: "Gestion en série (colocation, rotations) ; travaux plus durs à financer ; sicacité de revente plus faible.", profil: "Profil dynamique ou agressif, avec une trésorerie solide." },
+            { nom: "Coliving / colocation", icon: "fa-people-roof", force: "Rendement supérieur de 20 à 40% par rapport à la location classique (loyer par chambre) ; demande forte à Nancy, Sceaux (étudiants, jeunes actifs).", vigilance: "Rotations fréquentes = gestion dense ; mobiliers à renouveler ; réglementation à vérifier (normes meublé).", profil: "Dynamique ou agressif, à proximité des universités/axes de transport." },
+            { nom: "Parking / box", icon: "fa-square-parking", force: "Ticket très faible ; quasi zéro gestion (pas de locataire à gérer au quotidien) ; bon moyen de démarrer et d'apprendre en investissant peu.", vigilance: "Rendement brut limité (3-5%) ; valeur dépendante de la localisation ; pas d'emprunt bancaire sur l'anticipation des loyers.", profil: "Complément pour tout profil ; également un test du marché à petit budget." }
+        ];
+
+        function mensualitePour(prix, apport, taux, duree) {
+            var montantEmprunt = prix - apport;
+            if (montantEmprunt <= 0 || taux <= 0 || duree <= 0) return 0;
+            var tm = (taux / 100) / 12, nm = duree * 12;
+            return montantEmprunt * tm * Math.pow(1 + tm, nm) / (Math.pow(1 + tm, nm) - 1);
+        }
+
+        function projetImpots(b, loyerAnnuel, charges, tmi, ps) {
+            var tauxTotal = tmi + ps;
+            var montantEmprunt = b.prix - (b.apport || 0);
+            var interets = montantEmprunt * (b.taux / 100);
+            var res = {};
+            // Nu au micro-foncier (si loyers < 15 000 EUR/an) : abattement 30%
+            res.microFoncier = loyerAnnuel < 15000 ? Math.max(0, loyerAnnuel * 0.25) * tauxTotal : null;
+            // Nu au réel : loyers - charges - intérêts d'emprunt
+            var baseFoncier = loyerAnnuel - charges - interets;
+            res.reelFoncier = Math.max(0, baseFoncier) * tauxTotal;
+            // Meublé micro-BIC : abattement 50%
+            res.microBic = loyerAnnuel * 0.25 * tauxTotal;
+            // Meublé au réel : loyers - charges - amortissement (construction ~85% du prix sur 25 ans)
+            var amortissement = b.prix * 0.85 / 25;
+            var baseBic = loyerAnnuel - charges - amortissement - interets;
+            res.reelBic = baseBic > 0 ? baseBic * tauxTotal : 0;
+            res.reelBicDeficit = baseBic <= 0;
+            return res;
+        }
+
+        var statutsData = [
+            { nom: "Nue - micro-foncier", icon: "fa-file-invoice", pour: "Zéro déclaration complexe : abattement automatique de 30% sur les loyers.", contre: "Réservé aux loyers < 15 000 EUR/an ; aucune charge ni intérêt déduisible ; impôt souvent le plus élevé des 4 régimes." },
+            { nom: "Nue - au réel (foncier)", icon: "fa-file-lines", pour: "Charges, intérêts d'emprunt et travaux sont déduits : intéressant sur un bien récent fortement emprunté ou avec gros travaux.", contre: "Déclaration formelle plus lourde ; le déficit est reportable 10 ans (3 ans pour les seuls intérêts) ; soumis à la TMI du user." },
+            { nom: "Meublé - micro-BIC (LMNP)", icon: "fa-sofa", pour: "Abattement de 50% : l'impôt est moitié moindre qu'en micro-foncier ; rester très simple à gérer.", contre: "Plafond de loyers (72 600 EUR/an en 2026, en évolution) ; aucune charge déduite ; exige un statut de location meublée réel (bail 1 an).", note: "Réforme en discussion : l'avantage micro-BIC pourrait être encadré." },
+            { nom: "Meublé - réel (LMNP)", icon: "fa-scale-balanced", pour: "L'amortissement (construction sur 25-50 ans) ramène l'impôt à quasiment zéro pendant 10-15 ans ; c'est le régime le plus utilisé par les investisseurs qui optimisent.", contre: "Comptabilité obligatoire (200-500 EUR/an d'expert-comptable souvent recommandé) ; l'offre a beaucoup changé par la réforme en discussion (plafonnement possible de l'amortissement)." }
+        ];
+
+        function renderStatuts() {
+            var sg = document.getElementById('statut-grid');
+            if (!sg || sg.dataset.rendered) return;
+            sg.innerHTML = statutsData.map(function(s) {
+                return '<div class="statut-card"><h4><i class="fas ' + s.icon + '"></i> ' + s.nom + '</h4>' +
+                    '<ul><li><strong>Pour :</strong> ' + s.pour + '</li>' +
+                    '<li><strong>Contre :</strong> ' + s.contre + '</li></ul>' +
+                    (s.note ? '<p class="statut-impot"><i class="fas fa-triangle-exclamation"></i> ' + s.note + '</p>' : '') +
+                    '</div>';
+            }).join('');
+            sg.dataset.rendered = '1';
+        }
+
+        function renderProjet() {
+            var el = document.getElementById('projet-content');
+            if (!el) return;
+
+            // --- Profil ---
+            var profilIdx = 1;
+            try { var stored = localStorage.getItem('monProfil'); if (stored !== null) profilIdx = parseInt(stored) || 0; } catch (e) {}
+            var profil = profilDefini[profilIdx];
+
+            // --- Bien analysé ---
+            var b = loadBien1();
+            var calcule = b && b.prix > 0 && b.loyer > 0;
+            if (!calcule) {
+                el.innerHTML = '<div class="diversification-card"><h4><i class="fas fa-circle-info"></i> Aucun bien analysé pour l\'instant</h4><p>Rendez-vous dans l\'onglet <strong>Analyser un bien</strong>, renseignez un bien puis revenez : la synthèse, le verdict de viabilité et la projection par statut fiscal se construiront automatiquement à partir de vos chiffres.</p></div>';
+                document.getElementById('fiscal-table').innerHTML = '';
+                document.getElementById('diversification-content').innerHTML = '';
+            } else {
+                var c1 = computeBien(b);
+                var vd = villeDataFrom(b.ville);
+                var poseCf = c1.cashFlowMensuel;
+                var niveau = (c1.cashFlowMensuel >= 0 && c1.rentabiliteNette >= 4.5) ? 'go' : (c1.cashFlowMensuel >= -30 || c1.rentabiliteNette >= 3 ? 'mid' : 'no');
+                var verdictTxt = niveau === 'go' ? "Projet solide en l'état" : (niveau === 'mid' ? "Système jouable, quelques réglages à faire" : "Non viable en l'état : à retravailler avant d'aller plus loin");
+                var verdictIcon = niveau === 'go' ? "fa-circle-check" : (niveau === 'mid' ? "fa-triangle-exclamation" : "fa-circle-xmark");
+
+                var actions = [];
+                if (b.dpe === 'F' || b.dpe === 'G') {
+                    actions.push("<strong>DPE " + b.dpe + " :</strong> un logement classé F ou G peut devenir inéligible à la location sans travaux. Budgetez l'isolation dans l'enveloppe de travaux, ou négociez le prix en conséquence.");
+                }
+                if (poseCf < 0) {
+                    var gain10k = (c1.mensualite - mensualitePour(b.prix, (b.apport || 0) + 10000, b.taux, b.duree)).toFixed(0);
+                    actions.push("<strong>Cash-flow négatif (" + poseCf.toFixed(0) + " EUR/mois) :</strong> augmenter l'apport de 10 000 EUR réduirait la mensualité d'environ " + gain10k + " EUR/mois ; allonger la durée à " + Math.min(25, (b.duree || 20) + 5) + " ans, ou obtenir un loyer supérieur, agissent dans le même sens.");
+                }
+                if (c1.rentabiliteNette < 3) {
+                    var imp = projetImpots(b, c1.loyerAnnuel, c1.chargesAnnuelles, 0.30, 0.172);
+                    if (imp.reelBic === 0) {
+                        actions.push("<strong>Impôt optimisable :</strong> en LMNP au réel, l'amortissement réduirait votre impôt à approximativement 0 EUR/an (contre " + fmt(c1.impots) + " en forfait 30%) : un gain potentiel de " + fmt(c1.impots) + " par an à étudier (voir le tableau ci-dessous).");
+                    }
+                }
+                if (c1.seuil !== null && c1.seuil > 20) {
+                    var cfPlus = c1.cashFlowAnnuelNet + 600;
+                    var nouveauSeuil = cfPlus > 0 ? (c1.coutTotal / cfPlus).toFixed(1) : null;
+                    actions.push("<strong>Seuil long (" + c1.seuil.toFixed(1) + " ans) :</strong> un loyer de +50 EUR/mois (si le marché le permet, comparez au loyer T2 du quartier dans l'onglet Carte &amp; Quartiers) ramènerait le seuil à environ " + nouveauSeuil + " ans.");
+                }
+                if (niveau === 'go' && actions.length === 0) {
+                    actions.push("Projet cohérent " + (vd ? "sur " + vd.name : "") + ". Avant de vous engager : validez le taux d'emprunt réel auprès de 2-3 banques (l'écart évolue vite) et faites vérifier votre régime fiscal optimal par un professionnel.");
+                }
+                if (actions.length === 0) actions.push("Complétez votre analyse : renseignez le DPE et l'enveloppe de travaux dans l'onglet Analyser un bien pour un verdict plus précis.");
+
+                // Confrontation au profil
+                var profilNote = '';
+                if (profilIdx === 0 && poseCf < 0) profilNote = "Attention : avec un profil défensif, un cash-flow négatif est en contradiction avec votre objectif de sécurité.";
+                if (profilIdx === 0 && poseCf >= 0 && c1.seuil !== null && c1.seuil > 25) profilNote = "Avec un profil défensif, un seuil long est acceptable si le cash-flow est stable ; gardez un DPE propre et une tension locative forte.";
+                if (profilIdx === 2 || profilIdx === 3) {
+                    if (poseCf >= 0 && c1.rentabiliteNette < 4.5) profilNote = "Avec un profil dynamique, votre bien coche la case sécurité, mais la performance semble modeste : explorez le meublé ou une décote plus forte.";
+                    if (poseCf < 0 && c1.seuil === null) profilNote = "Cash-flow négatif et seuil non atteint : ça n'est \"agressif\" que si un levier réel (plus-value, revente ou travaux) est identifié. Sans scénario de sortie, cette situation est simplement fragile.";
+                }
+
+                var vName = vd ? vd.name : (b.ville || 'Ville non renseignée');
+                el.innerHTML =
+                    '<div class="diversification-card"><h4><i class="fas fa-bullseye"></i> Votre profil : ' + profil.nom + '</h4><p>' + profil.desc + '</p>' + (profilNote ? '<p style="margin-top: 8px; font-weight: 600;">→ ' + profilNote + '</p>' : '') + '</div>' +
+                    '<h4 style="margin: 25px 0 10px 0;">Vos chiffres consolidés</h4>' +
+                    '<table class="projet-summary">' +
+                        '<tr><td>Ville</td><td>' + vName + '</td></tr>' +
+                        '<tr><td>Prix d&#39;achat (frais inclus)</td><td>' + fmt(c1.coutTotal) + '</td></tr>' +
+                        '<tr><td>Loyer mensuel</td><td>' + fmt(b.loyer) + '</td></tr>' +
+                        '<tr><td>Rentabilité nette</td><td>' + c1.rentabiliteNette.toFixed(2) + '%</td></tr>' +
+                        '<tr><td>Cash-flow mensuel</td><td>' + (poseCf >= 0 ? '+' : '') + poseCf.toFixed(0) + ' EUR</td></tr>' +
+                        '<tr><td>Seuil de rentabilité</td><td>' + (c1.seuil !== null ? c1.seuil.toFixed(1) + ' ans' : 'N/A (cash-flow annuel negatif)') + '</td></tr>' +
+                    '</table>' +
+                    '<div class="verdict-badge verdict-' + niveau + '"><i class="fas ' + verdictIcon + '"></i> ' + verdictTxt + '</div>' +
+                    '<div class="projet-actions"><h4 style="margin: 10px 0 6px 0;">Actions prioritaires (générées à partir de vos chiffres)</h4><ul>' + actions.map(function(a) { return '<li>' + a + '</li>'; }).join('') + '</ul></div>';
+
+                // --- Projection par statut fiscal ---
+                var imp = projetImpots(b, c1.loyerAnnuel, c1.chargesAnnuelles, 0.30, 0.172);
+                var impTxt = function(v) { return v === null ? 'Loyers > 15 000 EUR/an : non éligible' : fmt(v) + ' / an'; };
+                var meilleur = Math.min(
+                    imp.microFoncier !== null ? imp.microFoncier : Infinity,
+                    imp.reelFoncier, imp.microBic, imp.reelBic
+                );
+                var rows = [
+                    ["Nue - micro-foncier", imp.microFoncier],
+                    ["Nue - au réel (foncier)", imp.reelFoncier],
+                    ["Meublé - micro-BIC (LMNP)", imp.microBic],
+                    ["Meublé - réel (LMNP)", imp.reelBic]
+                ];
+                var ft = '<thead><tr><th>Régime</th><th style="text-align:left;">Impôt estimé sur vos loyers</th></tr></thead><tbody>';
+                rows.forEach(function(r) {
+                    var est = r[1] === meilleur ? ' class="winner"' : '';
+                    ft += '<tr><td>' + r[0] + '</td><td' + est + '>' + (r[1] === 0 ? '≈ 0 EUR (déficit reportable)' : impTxt(r[1])) + '</td></tr>';
+                });
+                ft += '</tbody>';
+                document.getElementById('fiscal-table').innerHTML = ft;
+            }
+
+            // --- Typologies (statique mais adaptée) ---
+            renderStatuts();
+            var tg = document.getElementById('typo-grid');
+            if (!tg.dataset.rendered) {
+                tg.innerHTML = typologiesData.map(function(t) {
+                    return '<div class="typo-card"><h4><i class="fas ' + t.icon + '"></i> ' + t.nom + '</h4>' +
+                        '<ul><li><strong>Points forts :</strong> ' + t.force + '</li>' +
+                        '<li><strong>Vigilance :</strong> ' + t.vigilance + '</li>' +
+                        '<li><strong>Profil adapté :</strong> ' + t.profil + '</li></ul></div>';
+                }).join('');
+                tg.dataset.rendered = '1';
+            }
+
+            // --- Diversification ---
+            var dc = document.getElementById('diversification-content');
+            if (dc) {
+                dc.innerHTML =
+                    '<div class="diversification-card"><h4><i class="fas fa-layer-group"></i> Deux T2 au lieu d\'une maison</h4><p>Même enveloppe globale, mais deux loyers au lieu d\'un : si un locataire part, vous continuez à encaisser. La revente est aussi plus souple (liquer l\'un sans toucher à l\'autre).</p></div>' +
+                    '<div class="diversification-card"><h4><i class="fas fa-people-roof"></i> Un immeuble colivé</h4><p>Le même apport concentré sur un petit immeuble divisé en chambres exploite effectivement l\'écart entre prix à l&#39;achat et loyer cumulé coliving. C\'est le scénario le plus rentable, mais aussi le plus pilote (rotations, mobiliers) et celui dont la revente est la plus étroite.</p></div>' +
+                    '<div class="diversification-card"><h4><i class="fas fa-square-parking"></i> Parking ou box en centre-ville</h4><p>Avec une fraction de votre apport uniquement, un parking bien placé (centre des villes desservies sur la carte) génère un rendement modeste mais sans gestion, idéal pour apprendre sans risque tout en gardant le reste de l\'apport pour celui du bien principal.</p></div>' +
+                    '<p style="font-size: 0.8rem; color: var(--secondary); margin-top: 5px;">Ces pistes sont indicatives : chiffrez les dans le comparateur (enregistrez chaque scénario comme une composition) avant toute décision.</p>';
+            }
         }
 
         // ===== Compositions sauvegardées =====
@@ -2100,10 +2341,108 @@
             table.innerHTML = html;
         }
 
+        // ---------- Étude de marché par typologie ----------
+        function renderMarche() {
+            var table = document.getElementById('marche-table');
+            var vd = villeDataFrom(document.getElementById('marche-ville').value);
+            if (!table || !vd) {
+                if (table) table.innerHTML = '<tr><td>Saisissez une ville du prototype (Nancy, Douai, Sceaux ou Le Conquet) puis cliquez sur Analyser le marché.</td></tr>';
+                return;
+            }
+            var lT2 = Math.round(vd.quartiers.reduce(function(s, q) { return s + q.loyerT2; }, 0) / vd.quartiers.length);
+            var types = [
+                { t: "Studio", surf: 25, pm2: 1.10, loyer: 0.75, note: "Rotation forte, tension élevée : idéal dynamique/cashflow, mais vacance plus fréquente." },
+                { t: "T2", surf: 45, pm2: 1.00, loyer: 1.00, note: "Le plus recherché à la location : le standard des investissements locatifs." },
+                { t: "T3", surf: 65, pm2: 0.95, loyer: 1.30, note: "Familles et colocations possibles : location plus longue, moins de rotation." },
+                { t: "Maison", surf: 100, pm2: 0.90, loyer: 1.70, note: "Prix au m2 plus doux en périphérie ; ticket d'entrée plus élevé, vacance faible." }
+            ];
+            var html = '<thead><tr><th>Type</th><th>Surface type</th><th>Prix estimé</th><th>Prix / m2</th><th>Loyer estimé</th><th>Avis d&rsquo;expert</th><th></th></tr></thead><tbody>';
+            html += types.map(function(x) {
+                var pm = Math.round(vd.prixM2 * x.pm2);
+                var loyer = Math.round(lT2 * x.loyer);
+                return '<tr><td>' + x.t + '</td><td>~' + x.surf + ' m2</td><td>' + fmt(pm * x.surf) + '</td><td>' + fmt(pm) + '</td><td>~' + fmt(loyer) + '/mois</td><td style="max-width: 260px; font-size: 0.85rem;">' + x.note + '</td>' +
+                    '<td><button class="btn" style="padding: 8px 14px; font-size: 0.85rem;" onclick="preFillBien2(' + pm + ', ' + x.surf + ', ' + loyer + ')">Pré-remplir</button></td></tr>';
+            }).join('');
+            html += '</tbody>';
+            table.innerHTML = html;
+        }
+
+        function preFillBien2(prix, surface, loyer) {
+            if (document.getElementById('comp-prix-2-input')) document.getElementById('comp-prix-2-input').value = prix;
+            if (document.getElementById('comp-surface-2-input')) document.getElementById('comp-surface-2-input').value = surface;
+            if (document.getElementById('comp-loyer-2-input')) document.getElementById('comp-loyer-2-input').value = loyer;
+            updateComparison();
+        }
+
+        // ---------- Bibliographie par moment du parcours ----------
+        var biblioData = [
+            { titre: "Avant de chercher", icon: "fa-compass", items: [
+                { t: "Les zones tendues : définition officielle et liste des communes concernées (loyers encadrés, avantage fiscal).", u: "https://www.service-public.fr/particuliers/vosdroits/F31362" },
+                { t: "Panorama des dispositifs fiscaux de l'investissement locatif (Pinel, Denormandie, Loc'Avantages...).", u: "https://www.economie.gouv.fr/particuliers/dispositifs-investissement-locatif" },
+                { t: "Les statuts d'investisseur : nue, LMNP, SCI - quel statut choisir et quelle fiscalité ?", u: "https://www.service-public.fr/particuliers/vosdroits/F10860" }
+            ]},
+            { titre: "Analyser un bien", icon: "fa-magnifying-glass-chart", items: [
+                { t: "Demandes de valeurs foncières (DVF) : consultez les ventes réelles adresse par adresse (app officielle data.gouv).", u: "https://app.dvf.etalab.gouv.fr/" },
+                { t: "MeilleursAgents : prix au m2 par ville et par quartier, et estimateurs de loyers.", u: "https://www.meilleursagents.com/prix-immobilier/" },
+                { t: "Performance énergétique : ce qui change pour les passoires thermiques F et G (service-public).", u: "https://www.service-public.fr/particuliers/vosdroits/F35629" }
+            ]},
+            { titre: "Financer", icon: "fa-bank", items: [
+                { t: "Taux d'endettement à 35% et durée maximale : règles d'octroi des crédits immobiliers.", u: "https://www.service-public.fr/particuliers/vosdroits/F32487" },
+                { t: "Prêt à taux zéro (PTZ) : conditions et montants (service-public).", u: "https://www.service-public.fr/particuliers/vosdroits/F1109" },
+                { t: "Les taux moyens du moment et les conseils pour négocier votre crédit (Observatoire Crédit Logement).", u: "https://www.creditlogement.fr/observatoire/" }
+            ]},
+            { titre: "Signer et louer", icon: "fa-handshake", items: [
+                { t: "Bail d'habitation vide ou meublé : clauses obligatoires et durée du bail (service-public).", u: "https://www.service-public.fr/particuliers/vosdroits/F31355" },
+                { t: "Encadrement des loyers : vérifiez si votre ville est concernée (service-public).", u: "https://www.service-public.fr/particuliers/vosdroits/F32475" },
+                { t: "Diagnostics techniques obligatoires avant mise en location (DPE, plomb, électricité...).", u: "https://www.service-public.fr/particuliers/vosdroits/F31318" }
+            ]},
+            { titre: "Gérer et optimiser", icon: "fa-chart-line", items: [
+                { t: "Imposition des revenus fonciers : micro-foncier ou réel, comment déclarer (service-public).", u: "https://www.service-public.fr/particuliers/vosdroits/F10862" },
+                { t: "LMNP et BIC : plafonds, abattements et déclaration des locations meublées (service-public).", u: "https://www.service-public.fr/particuliers/vosdroits/F32472" },
+                { t: "Charges récupérables sur le locataire : ce que vous pouvez répercuter (service-public).", u: "https://www.service-public.fr/particuliers/vosdroits/F25747" }
+            ]}
+        ];
+
+        function renderBiblio() {
+            var el = document.getElementById('biblio-list');
+            if (!el || el.dataset.rendered) return;
+            el.innerHTML = biblioData.map(function(c) {
+                return '<div class="article-item"><h4><i class="fas ' + c.icon + '" style="margin-right: 8px; color: var(--secondary);"></i>' + c.titre + '</h4>' +
+                    c.items.map(function(i) { return '<p>' + i.t + ' <a href="' + i.u + '" class="article-link" target="_blank" rel="noopener">Ouvrir</a></p>'; }).join('') +
+                    '</div>';
+            }).join('');
+            el.dataset.rendered = '1';
+        }
+
+        function zoneSlug(v) {
+            return v.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim().replace(/\s+/g, '-');
+        }
+
+        function renderZoneLinks() {
+            var ville = (document.getElementById('zone-ville').value || '').trim();
+            var cp = (document.getElementById('zone-cp').value || '').trim();
+            if (!ville) return;
+            var slug = zoneSlug(ville);
+            var withCp = cp ? slug + '-' + cp : slug;
+            var links = [
+                { n: "Ventes réelles (DVF, officiel)", u: "https://app.dvf.etalab.gouv.fr/", d: "Carte des ventes réelles adresse par adresse" },
+                { n: "Prix au m2 (MeilleursAgents)", u: "https://www.meilleursagents.com/prix-immobilier/" + withCp + "/", d: "Prix et loyers estimés par quartier" },
+                { n: "Prix au m2 (ParuVendu / notaires)", u: "https://www.paruvendu.fr/immobilier/prix-m2/" + withCp + "/", d: "Données de ventes notaires-DGFiP" },
+                { n: "Dernières ventes (Immo-DVF)", u: "https://www.immo-dvf.fr/?ville=" + encodeURIComponent(ville), d: "Rechercher les ventes récentes" },
+                { n: "Actualités locales", u: "https://news.google.com/search?q=" + encodeURIComponent("immobilier " + ville), d: "Projets urbains et marché dans la presse récente" }
+            ];
+            document.getElementById('zone-links').innerHTML = links.map(function(l) {
+                return '<li class="source-item"><div class="source-icon"><i class="fas fa-arrow-up-right-from-square"></i></div>' +
+                    '<div class="source-content"><h4><a href="' + l.u + '" class="source-link" target="_blank" rel="noopener">' + l.n + '</a></h4>' +
+                    '<p>' + l.d + '</p></div></li>';
+            }).join('');
+        }
+
         document.addEventListener('DOMContentLoaded', function() {
             updateComparison();
             renderCompos();
-            renderQuiz();            // Mise à jour automatique du Bien 2 dès qu'un champ est modifié
+            renderQuiz();
+            renderBiblio();            // Mise à jour automatique du Bien 2 dès qu'un champ est modifié
             ['comp-prix-2-input', 'comp-surface-2-input', 'comp-loyer-2-input', 'comp-charges-2-input'].forEach(function(id) {
                 var el = document.getElementById(id);
                 if (el) el.addEventListener('input', updateComparison);
