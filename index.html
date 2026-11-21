@@ -18,7 +18,7 @@
             --success: #1e6e54;      /* vert sobre : valeurs gagnantes / cash-flow positif */
             --danger: #b0453a;       /* rouge brique doux : alertes et valeurs négatives */
             --warning: #b07d2b;
-            --light: #faf7f2;        /* crème : fond général */
+            --light: #f3ecdb;        /* crème soutenu : fond général */
             --dark: #1e3a5f;         /* bleu foncé : couleur des textes */
             --border: #e6e0d6;       /* beige clair : bordures */
             --card-bg: #ffffff;      /* blanc pur : cartes et zones de texte */
@@ -28,7 +28,7 @@
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             font-family: 'HK Grotesk', 'Hanken Grotesk', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-            background-color: #faf7f2;
+            background-color: #f3ecdb;
             color: #1e3a5f;
             line-height: 1.6;
             display: flex;
@@ -101,6 +101,93 @@
             gap: 8px;
         }
         .tab:hover { background: var(--border); }
+        .tab-right { margin-left: auto; }
+
+        /* Grilles Sources : 2 blocs par ligne */
+        .grid-2, .biblio-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 15px;
+            margin: 15px 0 10px 0;
+        }
+        .biblio-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 18px;
+            box-shadow: 0 1px 3px rgba(30,58,95,0.06);
+        }
+        .biblio-card h4 { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; color: var(--primary); }
+        .biblio-card p { margin: 8px 0; font-size: 0.92rem; }
+        .biblio-card p a { color: var(--primary); font-weight: 600; text-decoration: none; border-bottom: 1px solid var(--border); }
+        .biblio-card p a:hover { text-decoration: underline; }
+        .teaser-card {
+            background: linear-gradient(135deg, #1e3a5f, #2d5a8e);
+            border: none;
+            border-radius: 10px;
+            padding: 18px;
+            color: #f5f8fc;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        .teaser-card h4 { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; color: #ffd66b; }
+        .teaser-card p { margin: 6px 0; font-size: 0.92rem; line-height: 1.5; }
+        .teaser-tag {
+            display: inline-block;
+            background: #ffd66b;
+            color: #1e3a5f;
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            padding: 3px 10px;
+            border-radius: 999px;
+            margin-bottom: 8px;
+            align-self: flex-start;
+        }
+        .fiscal-alert {
+            background: #fdf6ec;
+            border: 1px solid #e7cfa4;
+            border-radius: 8px;
+            padding: 10px 12px;
+            font-size: 0.88rem;
+            color: #7a5a18;
+            display: flex;
+            gap: 8px;
+            align-items: flex-start;
+        }
+        .fiscal-alert i { margin-top: 3px; flex-shrink: 0; }
+        /* Catégories d'aides : code couleur discret */
+        .aide-cat {
+            border-left: 4px solid var(--primary);
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-left-width: 4px;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 12px;
+        }
+        .aide-cat h4 { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+        .aide-neuf h4 i { color: #2f7d5b; }
+        .aide-neuf { border-left-color: #2f7d5b; }
+        .aide-ancien h4 i { color: #a26a35; }
+        .aide-ancien { border-left-color: #a26a35; }
+        .aide-renov h4 i { color: #b07d2b; }
+        .aide-renov { border-left-color: #d9a02b; }
+        .aide-primo h4 i { color: #5b4fa0; }
+        .aide-primo { border-left-color: #5b4fa0; }
+        .aide-local h4 i { color: #5a6b7d; }
+        .aide-local { border-left-color: #5a6b7d; }
+        /* Explication des données : 2 colonnes */
+        .sources-cols {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            align-items: start;
+            margin: 15px 0 10px 0;
+        }
+        @media (max-width: 900px) { .sources-cols { grid-template-columns: 1fr; } }
         .tab.active { background: var(--primary); color: #ffffff; border-color: var(--primary); }
 
         /* Badge "prototype" dans le header */
@@ -648,9 +735,9 @@
         <div class="tab active" onclick="goToTab('objectifs')"><i class="fas fa-bullseye"></i> Mes objectifs</div>
         <div class="tab" onclick="goToTab('analyse')"><i class="fas fa-calculator"></i> Analyser un bien</div>
         <div class="tab" onclick="goToTab('carte')"><i class="fas fa-map-location-dot"></i> Carte &amp; Quartiers</div>
-        <div class="tab" onclick="goToTab('comparaison')"><i class="fas fa-scale-balanced"></i> Comparaison</div>
-        <div class="tab" onclick="goToTab('sources')"><i class="fas fa-book"></i> Sources &amp; Infos</div>
         <div class="tab" onclick="goToTab('projet')"><i class="fas fa-diagram-project"></i> Mon projet</div>
+        <div class="tab" onclick="goToTab('comparaison')"><i class="fas fa-scale-balanced"></i> Comparaison</div>
+        <div class="tab tab-right" onclick="goToTab('sources')"><i class="fas fa-book"></i> Sources &amp; Infos</div>
     </nav>
 
     <main>
@@ -1131,129 +1218,203 @@
                     </div>
                 </div>
 
-                <h3 style="margin: 30px 0 20px 0;">Explications des données et calculs</h3>
-                <div class="article-item">
-                    <ul class="source-list">
-                    <li class="source-item">
-                        <div class="source-icon"><i class="fas fa-chart-line"></i></div>
-                        <div class="source-content">
-                            <h4>Prix au m2 par ville et par quartier</h4>
-                            <p>Source: <a href="https://www.meilleursagents.com/" class="source-link" target="_blank">MeilleursAgents</a> et <a href="https://app.dvf.etalab.gouv.fr/" class="source-link" target="_blank">Demandes de valeurs foncières (cadastre, data.gouv)</a></p>
-                            <p>Moyennes par quartier estimées sur les ventes des 2-3 dernières années.</p>
-                        </div>
-                    </li>
-                    <li class="source-item">
-                        <div class="source-icon"><i class="fas fa-map-marker-alt"></i></div>
-                        <div class="source-content">
-                            <h4>Tension locative</h4>
-                            <p>Source: <a href="https://www.seloger.com/" class="source-link" target="_blank">SeLoger</a> et <a href="https://www.insee.fr/" class="source-link" target="_blank">INSEE</a></p>
-                            <p>Indice basé sur le ratio offre/demande et le taux de vacance locative.</p>
-                        </div>
-                    </li>
-                    <li class="source-item">
-                        <div class="source-icon"><i class="fas fa-euro-sign"></i></div>
-                        <div class="source-content">
-                            <h4>Fourchette de loyers</h4>
-                            <p>Source: <a href="https://www.pap.fr/" class="source-link" target="_blank">PAP.fr</a> et <a href="https://www.leboncoin.fr/" class="source-link" target="_blank">Leboncoin</a></p>
-                            <p>Loyers moyens pour des biens comparables (même surface, même nombre de pièces).</p>
-                        </div>
-                    </li>
-                    </ul>
-                </div>
+                <!-- 1. Conseils pratiques par moment du parcours : blocs 2 par ligne + teaser Agent IA -->
+                <h3 style="margin: 30px 0 20px 0;">Conseils pratiques : au bon moment du parcours</h3>
+                <p style="margin-bottom: 20px; color: var(--secondary); font-size: 0.9rem;">Classés selon l'avancement de votre projet, pour lire la bonne ressource au bon moment.</p>
+                <div class="biblio-grid" id="biblio-list"></div>
 
-                <h3 style="margin: 30px 0 20px 0;">Comment sont calculés les indicateurs ?</h3>
-                <div class="article-item">
-                    <p style="margin-bottom: 15px; color: var(--secondary); font-size: 0.9rem;">Cliquez sur chaque indicateur pour dérouler l'explication détaillée et sa formule.</p>
-                    <details class="calc-item">
-                        <summary><i class="fas fa-chart-line" style="color: var(--secondary);"></i> Rentabilité brute</summary>
-                        <div class="calc-body">
-                            La rentabilité brute mesure le rendement du bien avant toute charge. C'est l'indicateur le plus simple pour comparer rapidement plusieurs biens entre eux, mais il ne reflète pas le résultat réel.
-                            <span class="calc-formula">Rentabilité brute = (Loyer mensuel x 12) / Prix d'achat x 100</span>
-                        </div>
-                    </details>
-                    <details class="calc-item">
-                        <summary><i class="fas fa-chart-pie" style="color: var(--secondary);"></i> Rentabilité nette</summary>
-                        <div class="calc-body">
-                            La rentabilité nette intègre les charges annuelles (copropriété, assurance, taxe foncière...) et l'imposition forfaitaire estimée à 30% des loyers. Le coût total inclut le prix d'achat majoré d'environ 8% de frais d'acquisition (notaire, frais d'agence, garanties).
-                            <span class="calc-formula">Rentabilité nette = (Loyer annuel - Charges annuelles - Impôts) / (Prix d'achat + 8% de frais) x 100</span>
-                        </div>
-                    </details>
-                    <details class="calc-item">
-                        <summary><i class="fas fa-wallet" style="color: var(--secondary);"></i> Cash-flow mensuel</summary>
-                        <div class="calc-body">
-                            Le cash-flow mensuel est ce qu'il vous reste (ou vous manque) chaque mois une fois le loyer encaissé, la mensualité de crédit payée et les charges réglées. Un cash-flow positif signifie que le bien s'autofinance et dégage un surplus.
-                            <span class="calc-formula">Cash-flow mensuel = Loyer mensuel - Mensualité de crédit - Charges mensuelles</span>
-                        </div>
-                    </details>
-                    <details class="calc-item">
-                        <summary><i class="fas fa-calendar-days" style="color: var(--secondary);"></i> Seuil de rentabilité (breakeven)</summary>
-                        <div class="calc-body">
-                            Le seuil de rentabilité indique le nombre d'années nécessaires pour récupérer votre mise de départ grâce au cash-flow annuel net. Plus il est court, plus vite l'investissement est "remboursé" par les loyers. Si le cash-flow annuel net est négatif, le seuil ne peut pas être calculé (N/A).
-                            <span class="calc-formula">Seuil de rentabilité = Coût total (prix + 8% de frais) / Cash-flow annuel net</span>
-                        </div>
-                    </details>
-                    <details class="calc-item">
-                        <summary><i class="fas fa-bank" style="color: var(--secondary);"></i> Mensualité de crédit</summary>
-                        <div class="calc-body">
-                            La mensualité est calculée avec la formule d'amortissement classique d'un prêt à taux fixe, à partir du montant emprunté (prix moins l'apport), du taux et de la durée renseignés.
-                            <span class="calc-formula">Mensualité = Montant emprunté x t / (1 - (1 + t)^-n), avec t = taux mensuel et n = nombre de mois</span>
-                        </div>
-                    </details>
-                    <details class="calc-item">
-                        <summary><i class="fas fa-bolt" style="color: var(--secondary);"></i> Performance énergétique (DPE)</summary>
-                        <div class="calc-body">
-                            Le diagnostic de performance énergétique influence la location : les logements classés F ou G sont progressivement interdits à la location et subissent des vacances locatives plus longues. Le site affiche un commentaire qualitatif selon la classe renseignée.
-                        </div>
-                    </details>
-                    <details class="calc-item">
-                        <summary><i class="fas fa-scale-balanced" style="color: var(--secondary);"></i> Comparaison de biens</summary>
-                        <div class="calc-body">
-                            Les deux biens sont évalués avec les mêmes formules (rentabilité brute et nette, cash-flow, seuil de rentabilité). Dans la synthèse, la meilleure valeur de chaque ligne est mise en vert et la moins bonne en rouge pour faciliter la lecture. Le Bien 2 utilise par défaut : charges de 100 EUR/mois, apport de 20% du prix, taux de 3,5% et durée de 20 ans (modifiables en partie).
-                        </div>
-                    </details>
-                </div>
-
-                <h3 style="margin: 30px 0 20px 0;">Statuts fiscaux et aides</h3>
-                <div class="article-list">
-                    <div class="article-item">
-                        <h4>Dispositifs fiscaux pour l'investissement locatif</h4>
-                        <p>Loi Pinel : Réduction d'impôt pour l'achat d'un bien neuf en zone tendue. <a href="https://www.service-public.fr/particuliers/vosdroits/F1986" class="article-link" target="_blank">En savoir plus</a></p>
-                        <p>LMNP (Loueur Meublé Non Professionnel) : Amortissement du bien et déduction des charges. <a href="https://www.impots.gouv.fr/" class="article-link" target="_blank">En savoir plus</a></p>
-                        <p>Denormandie : Réduction d'impôt pour la rénovation de logements anciens dans certains centres-villes. <a href="https://www.service-public.fr/particuliers/vosdroits/F3119" class="article-link" target="_blank">En savoir plus</a></p>
-                        <p>Censi-Bouvard : Réduction d'impôt pour l'achat d'une résidence de services (EHPAD, résidence étudiante). <a href="https://www.service-public.fr/particuliers/vosdroits/F1700" class="article-link" target="_blank">En savoir plus</a></p>
-                    </div>
-                    <div class="article-item">
-                        <h4>Aides locales et régionales</h4>
-                        <p>Eco-PTZ : Prêt à taux zéro pour les travaux de rénovation énergétique. <a href="https://www.service-public.fr/particuliers/vosdroits/F1757" class="article-link" target="_blank">En savoir plus</a></p>
-                        <p>MaPrimeRénov' : Aide pour les travaux d'isolation, chauffage, etc. <a href="https://www.maprimerenov.gouv.fr/" class="article-link" target="_blank">Site officiel</a></p>
-                        <p>Aides des collectivités locales : certaines villes ou régions proposent des subventions pour la rénovation. <a href="https://www.nancy.fr/" class="article-link" target="_blank">Exemple : Ville de Nancy</a></p>
-                    </div>
-                </div>
-
+                <!-- 2. Données sur votre ville / zone -->
                 <h3 style="margin: 30px 0 20px 0;">Données sur votre ville ou zone</h3>
                 <div class="article-item">
                     <p style="margin-bottom: 15px; color: var(--secondary); font-size: 0.9rem;">Saisissez une ville (et son code postal pour plus de précision) : les liens ci-dessous s'ouvrent directement sur les données récentes de votre zone (ventes réelles, prix au m2, actualités locales).</p>
                     <div class="form-grid">
                         <div class="form-group">
                             <label for="zone-ville">Ville</label>
-                            <input type="text" id="zone-ville" placeholder="Ex : Bordeaux" />
+                            <input type="text" id="zone-ville" placeholder="Ex : Bordeaux">
                         </div>
                         <div class="form-group">
                             <label for="zone-cp">Code postal (optionnel)</label>
-                            <input type="text" id="zone-cp" placeholder="Ex : 33000" />
+                            <input type="text" id="zone-cp" placeholder="Ex : 33000">
                         </div>
                     </div>
                     <button class="btn" onclick="renderZoneLinks()" style="margin-top: 5px;"><i class="fas fa-magnifying-glass"></i> Afficher les sources</button>
                     <div id="zone-links" class="source-list" style="margin-top: 20px;"></div>
                 </div>
 
-                <h3 style="margin: 30px 0 20px 0;">Bibliographie : au bon moment du parcours</h3>
-                <p style="margin-bottom: 20px; color: var(--secondary); font-size: 0.9rem;">Classée selon l'avancement de votre projet, pour lire la bonne ressource au bon moment.</p>
-                <div class="article-list" id="biblio-list"></div>
+                <!-- 3. Statuts fiscaux : blocs 2 par ligne -->
+                <h3 style="margin: 30px 0 20px 0;">Statuts fiscaux : les régimes d'imposition des loyers</h3>
+                <p style="margin-bottom: 20px; color: var(--secondary); font-size: 0.9rem;">Règles 2026, en évolution (réforme du meublé en discussion) : vérifiez toujours les conditions à jour sur les sources officielles liées.</p>
+                <div class="grid-2">
+                    <div class="article-item">
+                        <h4>Nue - micro-foncier</h4>
+                        <p><strong>Conditions :</strong> loyers annuels inférieurs à 15 000 EUR, bien loué nu dans les règles.</p>
+                        <p><strong>Avantages :</strong> simplicité maximale, abattement automatique de 30%, aucune comptabilité.</p>
+                        <p><strong>Inconvénients :</strong> aucune charge ni intérêt d'emprunt déductible ; souvent le plus imposé.</p>
+                        <p><a href="https://www.impots.gouv.fr/" class="article-link" target="_blank" rel="noopener">Règles micro-foncier et micro-BIC (impots.gouv)</a> &nbsp; <a href="https://www.service-public.fr/particuliers/vosdroits/F10862" class="article-link" target="_blank" rel="noopener">Déclarer ses revenus fonciers (service-public)</a></p>
+                    </div>
+                    <div class="article-item">
+                        <h4>Nue - au réel (foncier)</h4>
+                        <p><strong>Conditions :</strong> déclaration au réel (formulaire 2044), aucune limite de loyers.</p>
+                        <p><strong>Avantages :</strong> charges, intérêts d'emprunt et travaux déductibles ; déficit reportable 10 ans.</p>
+                        <p><strong>Inconvénients :</strong> déclaration plus lourde ; soumis à votre tranche marginale d'imposition.</p>
+                        <p><a href="https://www.service-public.fr/particuliers/vosdroits/F10864" class="article-link" target="_blank" rel="noopener">Déduction des charges (service-public)</a></p>
+                    </div>
+                    <div class="article-item">
+                        <h4>Meublé - micro-BIC (LMNP)</h4>
+                        <p><strong>Conditions :</strong> location meublée, loyers annuels sous le plafond micro-BIC (72 600 EUR en 2026).</p>
+                        <p><strong>Avantages :</strong> abattement de 50% : l'impôt est moitié moindre qu'en micro-foncier, déclaration simple.</p>
+                        <p><strong>Inconvénients :</strong> aucune charge déduite ; exige un vrai statut de location meublée.</p>
+                        <p class="fiscal-alert"><i class="fas fa-triangle-exclamation"></i> En cours de discussion pour la loi de finances : un plafonnement de cet avantage est envisagé, les conditions peuvent évoluer rapidement.</p>
+                        <p><a href="https://www.impots.gouv.fr/" class="article-link" target="_blank" rel="noopener">Règles du micro-BIC (impots.gouv)</a> &nbsp; <a href="https://www.economie.gouv.fr/particuliers/declaration-location-meublee-touristique" class="article-link" target="_blank" rel="noopener">Location meublée (economie.gouv)</a></p>
+                    </div>
+                    <div class="article-item">
+                        <h4>Meublé - réel (LMNP)</h4>
+                        <p><strong>Conditions :</strong> déclaration BIC au réel ; comptabilité tenue (un expert-comptable est souvent recommandé).</p>
+                        <p><strong>Avantages :</strong> amortissement du bien (sur 25 ans et plus), charges et intérêts déduits : impôt souvent quasi nul pendant des années.</p>
+                        <p><strong>Inconvénients :</strong> coût comptable (200-500 EUR/an) ; les amortissements ne créent jamais de déficit reportable.</p>
+                        <p class="fiscal-alert"><i class="fas fa-triangle-exclamation"></i> En cours de discussion pour la loi de finances : réforme du régime réel du meublé (amortissement possiblement plafonné autour de 2,5% du prix). Vérifiez l'état du texte avant toute décision.</p>
+                        <p><a href="https://www.impots.gouv.fr/" class="article-link" target="_blank" rel="noopener">impots.gouv.fr</a> &nbsp; <a href="https://www.service-public.fr/particuliers/vosdroits/F32472" class="article-link" target="_blank" rel="noopener">Location meublée : déclarations (service-public)</a></p>
+                    </div>
+                </div>
+
+                <!-- 4. Aides par catégorie -->
+                <h3 style="margin: 30px 0 20px 0;">Aides et dispositifs selon votre projet</h3>
+                <p style="margin-bottom: 20px; color: var(--secondary); font-size: 0.9rem;">Regroupées par profil de projet : identifiez le vôtre, puis consultez les conditions officielles (elles évoluent chaque année).</p>
+                <div class="article-list">
+                    <div class="aide-cat aide-neuf">
+                        <h4><i class="fas fa-city"></i> Bien neuf</h4>
+                        <p><strong>Pinel (en extinction progressive) :</strong> réduction d'impôt pour un achat neuf en zone tendue, avec engagement de location. <a href="https://www.service-public.fr/particuliers/vosdroits/F1986" class="article-link" target="_blank" rel="noopener">En savoir plus</a></p>
+                        <p><strong>Censi-Bouvard :</strong> achat en résidence de services (EHPAD, résidence étudiante) avec réduction d'impôt. <a href="https://www.service-public.fr/particuliers/vosdroits/F1700" class="article-link" target="_blank" rel="noopener">En savoir plus</a></p>
+                        <p><strong>TVA réduite à 5,5% :</strong> possible sur certaines acquisitions neuves ou réhabilitées en zone de revitalisation. <a href="https://www.economie.gouv.fr/particuliers/tva-travaux-logement" class="article-link" target="_blank" rel="noopener">En savoir plus</a></p>
+                    </div>
+                    <div class="aide-cat aide-ancien">
+                        <h4><i class="fas fa-hammer"></i> Logement ancien à rénover</h4>
+                        <p><strong>Denormandie :</strong> réduction d'impôt pour rénover un ancien dans certains centres-villes. <a href="https://www.service-public.fr/particuliers/vosdroits/F3119" class="article-link" target="_blank" rel="noopener">En savoir plus</a></p>
+                        <p><strong>Déficit foncier :</strong> quand vos travaux dépassent vos loyers, le déficit s'impute sur votre revenu global (jusqu'à 10 700 EUR/an). <a href="https://www.service-public.fr/particuliers/vosdroits/F10864" class="article-link" target="_blank" rel="noopener">En savoir plus</a></p>
+                        <p><strong>Malraux :</strong> rénovation d'un bien en secteur sauvegardé : très encadrée, mais forte réduction d'impôt. <a href="https://www.impots.gouv.fr/" class="article-link" target="_blank" rel="noopener">En savoir plus</a></p>
+                    </div>
+                    <div class="aide-cat aide-renov">
+                        <h4><i class="fas fa-bolt"></i> Rénovation énergétique</h4>
+                        <p><strong>MaPrimeRénov' :</strong> aide pour isolation, chauffage, audit énergétique. <a href="https://www.maprimerenov.gouv.fr/" class="article-link" target="_blank" rel="noopener">Site officiel</a></p>
+                        <p><strong>Eco-PTZ :</strong> prêt sans intérêt pour les travaux de performance énergétique. <a href="https://www.service-public.fr/particuliers/vosdroits/F1757" class="article-link" target="_blank" rel="noopener">En savoir plus</a></p>
+                        <p><strong>Sortie des classements F et G :</strong> budgétisez ces travaux dès l'achat, l'interdiction de location des passoires thermiques est progressive. <a href="https://www.service-public.fr/particuliers/vosdroits/F35629" class="article-link" target="_blank" rel="noopener">En savoir plus</a></p>
+                    </div>
+                    <div class="aide-cat aide-primo">
+                        <h4><i class="fas fa-key"></i> Premier achat (primo-accédant)</h4>
+                        <p><strong>Prêt à taux zéro (PTZ) :</strong> complément de prêt sans intérêts sous conditions de revenus. <a href="https://www.service-public.fr/particuliers/vosdroits/F1109" class="article-link" target="_blank" rel="noopener">En savoir plus</a></p>
+                        <p><strong>Prêt Action Logement :</strong> prêt à taux avantageux si vous ou votre employeur êtes éligibles. <a href="https://www.actionlogement.fr/" class="article-link" target="_blank" rel="noopener">En savoir plus</a></p>
+                        <p><strong>Frais de notaire et aides locales :</strong> plusieurs départements expérimentent une baisse des droits sur l'ancien, et certaines villes aident les primo-accédants. <a href="https://www.anil.org/" class="article-link" target="_blank" rel="noopener">En savoir plus (ANIL)</a></p>
+                    </div>
+                    <div class="aide-cat aide-local">
+                        <h4><i class="fas fa-location-dot"></i> Location abordable et aides locales</h4>
+                        <p><strong>Loc'Avantages :</strong> réduction d'impôt si vous louez à loyer modéré via une agence sociale (le taux grimpe avec un niveau de modularité plus bas). <a href="https://www.anil.org/" class="article-link" target="_blank" rel="noopener">En savoir plus (ANIL)</a></p>
+                        <p><strong>Subventions des collectivités :</strong> certaines villes ou régions financent une partie des travaux. <a href="https://www.nancy.fr/" class="article-link" target="_blank" rel="noopener">Exemple : Ville de Nancy</a></p>
+                        <p><strong>Convention ANAH :</strong> subventions de travaux contre engagement de louer à loyer maîtrisé. <a href="https://www.anil.org/" class="article-link" target="_blank" rel="noopener">En savoir plus</a></p>
+                    </div>
+                </div>
+
+                <!-- 5. Explication des données : 2 colonnes -->
+                <h3 style="margin: 30px 0 20px 0;">Comprendre les chiffres et leurs sources</h3>
+                <p style="margin-bottom: 20px; color: var(--secondary); font-size: 0.9rem;">À gauche : comment sont calculés les indicateurs du site. À droite : d'où viennent les données, et comment les vérifier vous-même.</p>
+                <div class="sources-cols">
+                    <div>
+                        <h4 style="margin-bottom: 12px;"><i class="fas fa-calculator" style="color: var(--secondary); margin-right: 6px;"></i>Comment sont calculés les indicateurs ?</h4>
+                        <details class="calc-item">
+                            <summary><i class="fas fa-chart-line" style="color: var(--secondary);"></i> Rentabilité brute</summary>
+                            <div class="calc-body">
+                                La rentabilité brute mesure le rendement du bien avant toute charge. C'est l'indicateur le plus simple pour comparer rapidement plusieurs biens entre eux, mais il ne reflète pas le résultat réel.
+                                <span class="calc-formula">Rentabilité brute = (Loyer mensuel x 12) / Prix d'achat x 100</span>
+                            </div>
+                        </details>
+                        <details class="calc-item">
+                            <summary><i class="fas fa-chart-pie" style="color: var(--secondary);"></i> Rentabilité nette</summary>
+                            <div class="calc-body">
+                                La rentabilité nette intègre les charges annuelles (copropriété, assurance, taxe foncière...) et l'imposition forfaitaire estimée à 30% des loyers. Le coût total inclut le prix d'achat majoré d'environ 8% de frais d'acquisition (notaire, frais d'agence, garanties).
+                                <span class="calc-formula">Rentabilité nette = (Loyer annuel - Charges annuelles - Impôts) / (Prix d'achat + 8% de frais) x 100</span>
+                            </div>
+                        </details>
+                        <details class="calc-item">
+                            <summary><i class="fas fa-wallet" style="color: var(--secondary);"></i> Cash-flow mensuel</summary>
+                            <div class="calc-body">
+                                Le cash-flow mensuel est ce qu'il vous reste (ou vous manque) chaque mois une fois le loyer encaissé, la mensualité de crédit payée et les charges réglées. Un cash-flow positif signifie que le bien s'autofinance et dégage un surplus.
+                                <span class="calc-formula">Cash-flow mensuel = Loyer mensuel - Mensualité de crédit - Charges mensuelles</span>
+                            </div>
+                        </details>
+                        <details class="calc-item">
+                            <summary><i class="fas fa-calendar-days" style="color: var(--secondary);"></i> Seuil de rentabilité (breakeven)</summary>
+                            <div class="calc-body">
+                                Le seuil de rentabilité indique le nombre d'années nécessaires pour récupérer votre mise de départ grâce au cash-flow annuel net. Plus il est court, plus vite l'investissement est "remboursé" par les loyers. Si le cash-flow annuel net est négatif, le seuil ne peut pas être calculé (N/A).
+                                <span class="calc-formula">Seuil de rentabilité = Coût total (prix + 8% de frais) / Cash-flow annuel net</span>
+                            </div>
+                        </details>
+                        <details class="calc-item">
+                            <summary><i class="fas fa-bank" style="color: var(--secondary);"></i> Mensualité de crédit</summary>
+                            <div class="calc-body">
+                                La mensualité est calculée avec la formule d'amortissement classique d'un prêt à taux fixe, à partir du montant emprunté (prix moins l'apport), du taux et de la durée renseignés.
+                                <span class="calc-formula">Mensualité = Montant emprunté x t / (1 - (1 + t)^-n), avec t = taux mensuel et n = nombre de mois</span>
+                            </div>
+                        </details>
+                        <details class="calc-item">
+                            <summary><i class="fas fa-bolt" style="color: var(--secondary);"></i> Performance énergétique (DPE)</summary>
+                            <div class="calc-body">
+                                Le diagnostic de performance énergétique influence la location : les logements classés F ou G sont progressivement interdits à la location et subissent des vacances locatives plus longues. Le site affiche un commentaire qualitatif selon la classe renseignée.
+                            </div>
+                        </details>
+                        <details class="calc-item">
+                            <summary><i class="fas fa-scale-balanced" style="color: var(--secondary);"></i> Comparaison de biens</summary>
+                            <div class="calc-body">
+                                Les deux biens sont évalués avec les mêmes formules (rentabilité brute et nette, cash-flow, seuil de rentabilité). Dans la synthèse, la meilleure valeur de chaque ligne est mise en vert et la moins bonne en rouge pour faciliter la lecture. Le Bien 2 utilise par défaut : charges de 100 EUR/mois, apport de 20% du prix, taux de 3,5% et durée de 20 ans (modifiables en partie).
+                            </div>
+                        </details>
+                    </div>
+                    <div>
+                        <h4 style="margin-bottom: 12px;"><i class="fas fa-database" style="color: var(--secondary); margin-right: 6px;"></i>D'où viennent les données ?</h4>
+                        <ul class="source-list">
+                            <li class="source-item">
+                                <div class="source-icon"><i class="fas fa-chart-line"></i></div>
+                                <div class="source-content">
+                                    <h4>Prix au m2 par ville et par quartier</h4>
+                                    <p>Source: <a href="https://www.meilleursagents.com/" class="source-link" target="_blank">MeilleursAgents</a> et <a href="https://app.dvf.etalab.gouv.fr/" class="source-link" target="_blank">Demandes de valeurs foncières (cadastre, data.gouv)</a></p>
+                                    <p>Moyennes par quartier estimées sur les ventes des 2-3 dernières années.</p>
+                                </div>
+                            </li>
+                            <li class="source-item">
+                                <div class="source-icon"><i class="fas fa-map-marker-alt"></i></div>
+                                <div class="source-content">
+                                    <h4>Tension locative</h4>
+                                    <p>Source: <a href="https://www.seloger.com/" class="source-link" target="_blank">SeLoger</a> et <a href="https://www.insee.fr/" class="source-link" target="_blank">INSEE</a></p>
+                                    <p>Indice basé sur le ratio offre/demande et le taux de vacance locative.</p>
+                                </div>
+                            </li>
+                            <li class="source-item">
+                                <div class="source-icon"><i class="fas fa-euro-sign"></i></div>
+                                <div class="source-content">
+                                    <h4>Fourchette de loyers</h4>
+                                    <p>Source: <a href="https://www.pap.fr/" class="source-link" target="_blank">PAP.fr</a> et <a href="https://www.leboncoin.fr/" class="source-link" target="_blank">Leboncoin</a></p>
+                                    <p>Loyers moyens pour des biens comparables (même surface, même nombre de pièces).</p>
+                                </div>
+                            </li>
+                            <li class="source-item">
+                                <div class="source-icon"><i class="fas fa-users"></i></div>
+                                <div class="source-content">
+                                    <h4>Démographie et dynamisme des zones</h4>
+                                    <p>Source: <a href="https://www.insee.fr/" class="source-link" target="_blank">INSEE</a> (populations et évolutions), presse locale et projets urbains des villes (ex: <a href="https://www.nancy.fr/" class="source-link" target="_blank">nancy.fr</a>).</p>
+                                </div>
+                            </li>
+                            <li class="source-item">
+                                <div class="source-icon"><i class="fas fa-scale-balanced"></i></div>
+                                <div class="source-content">
+                                    <h4>Fiscalité et réglementation</h4>
+                                    <p>Source: <a href="https://www.service-public.fr/" class="source-link" target="_blank">service-public.fr</a>, <a href="https://www.impots.gouv.fr/" class="source-link" target="_blank">impots.gouv.fr</a>, <a href="https://www.anil.org/" class="source-link" target="_blank">ANIL</a>. Règles 2026, en évolution.</p>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
             </div>
         </div>
 
-        <!-- Onglet A propos -->
+        <!-- Onglet A propos -->        <!-- Onglet A propos -->
         <div id="apropos" class="tab-content">
             <div class="form-section">
                 <h2>A propos</h2>
@@ -1282,6 +1443,10 @@
                 <h2>Choisir son statut fiscal</h2>
                 <p style="color: var(--secondary); margin-bottom: 15px;">Le régime fiscal choisi peut faire sortir votre impôt de plusieurs dizaines d'euros de marge par mois. Voici une projection indicative pour votre bien analysé (règles 2026, en évolution législative : vérifiez les seuils en vigueur avant de vous engager).</p>
                 <div class="multi-table-wrap"><table class="comp-table" id="fiscal-table"></table></div>
+                <h3 style="margin: 25px 0 10px 0;">Cash-flow et breakeven potentiels selon la durée (avec votre crédit actuel)</h3>
+                <p style="color: var(--secondary); font-size: 0.9rem; margin-bottom: 12px;">Cumul du cash-flow net après impôt du régime choisi, aux horizons 5, 10, 15 et 20 ans, et nombre d'années pour récupérer votre mise de départ. Hypothèse simple : loyer et charges constants (l'inflation des loyers améliorerait ces chiffres).</p>
+                <div class="multi-table-wrap"><table class="comp-table" id="horizon-table"></table></div>
+                <div id="statut-conclusion" style="margin-top: 15px;"></div>
                 <div class="statut-grid mt-20" id="statut-grid"></div>
                 <p style="font-size: 0.75rem; color: var(--secondary); margin-top: 15px;">Estimations simplifiées à titre indicatif (TMI de 30%, forfaits et amortissements standards). Elles ne remplacent pas une validation par un expert-comptable ou votre centre des impôts : le régime optimal dépend de tous vos revenus.</p>
             </div>
@@ -1513,7 +1678,7 @@
             var target = document.getElementById(tabName);
             if (target) target.classList.add('active');
             // Active l'onglet correspondant dans la nav
-            var tabMap = { objectifs: 0, analyse: 1, carte: 2, comparaison: 3, sources: 4, projet: 5, apropos: -1, contact: -1 };
+            var tabMap = { objectifs: 0, analyse: 1, carte: 2, projet: 3, comparaison: 4, sources: 5, apropos: -1, contact: -1 };
             if (tabs[tabMap[tabName]]) tabs[tabMap[tabName]].classList.add('active');
 
             if (tabName === 'carte') {
@@ -2060,7 +2225,7 @@
         var typologiesData = [
             { nom: "Appartement", icon: "fa-building", force: "Le format le plus simple à louer et à revendre ; demande constante en ville ; charges souvent prévisibles.", vigilance: "Copropriété : charges imprévues (ravalement, toiture) ; attention aux règlements (Airbnb parfois interdit).", profil: "Tous les profils, c'est le point d'entrée le plus sûr." },
             { nom: "Maison", icon: "fa-house", force: "Loue bien aux familles (baux longs, vacance faible) ; potentiel de plus-value sur le terrain ; pas de charges de copropriété.", vigilance: "Entretien plus lourd (toiture, jardin) ; ticket d'entrée plus élevé ; dispersion des appels de fonds.", profil: "Profil défensif ou équilibré en zone pavillonnaire." },
-            { nom: "Immeuble", icon: "fa-city", force: "Plusieurs appartements sous un seul ticket : rendement net supérieur (de 1 à 3 points) et vrai levier de valorisation.", vigilance: "Gestion en série (colocation, rotations) ; travaux plus durs à financer ; sicacité de revente plus faible.", profil: "Profil dynamique ou agressif, avec une trésorerie solide." },
+            { nom: "Immeuble", icon: "fa-city", force: "Plusieurs appartements sous un seul ticket : rendement net supérieur (de 1 à 3 points) et vrai levier de valorisation.", vigilance: "Gestion en série (colocation, rotations) ; travaux plus durs à financer ; liquidité de revente plus faible.", profil: "Profil dynamique ou agressif, avec une trésorerie solide." },
             { nom: "Coliving / colocation", icon: "fa-people-roof", force: "Rendement supérieur de 20 à 40% par rapport à la location classique (loyer par chambre) ; demande forte à Nancy, Sceaux (étudiants, jeunes actifs).", vigilance: "Rotations fréquentes = gestion dense ; mobiliers à renouveler ; réglementation à vérifier (normes meublé).", profil: "Dynamique ou agressif, à proximité des universités/axes de transport." },
             { nom: "Parking / box", icon: "fa-square-parking", force: "Ticket très faible ; quasi zéro gestion (pas de locataire à gérer au quotidien) ; bon moyen de démarrer et d'apprendre en investissant peu.", vigilance: "Rendement brut limité (3-5%) ; valeur dépendante de la localisation ; pas d'emprunt bancaire sur l'anticipation des loyers.", profil: "Complément pour tout profil ; également un test du marché à petit budget." }
         ];
@@ -2093,28 +2258,99 @@
         }
 
         var statutsData = [
-            { nom: "Nue - micro-foncier", icon: "fa-file-invoice", pour: "Zéro déclaration complexe : abattement automatique de 30% sur les loyers.", contre: "Réservé aux loyers < 15 000 EUR/an ; aucune charge ni intérêt déduisible ; impôt souvent le plus élevé des 4 régimes." },
-            { nom: "Nue - au réel (foncier)", icon: "fa-file-lines", pour: "Charges, intérêts d'emprunt et travaux sont déduits : intéressant sur un bien récent fortement emprunté ou avec gros travaux.", contre: "Déclaration formelle plus lourde ; le déficit est reportable 10 ans (3 ans pour les seuls intérêts) ; soumis à la TMI du user." },
-            { nom: "Meublé - micro-BIC (LMNP)", icon: "fa-sofa", pour: "Abattement de 50% : l'impôt est moitié moindre qu'en micro-foncier ; rester très simple à gérer.", contre: "Plafond de loyers (72 600 EUR/an en 2026, en évolution) ; aucune charge déduite ; exige un statut de location meublée réel (bail 1 an).", note: "Réforme en discussion : l'avantage micro-BIC pourrait être encadré." },
-            { nom: "Meublé - réel (LMNP)", icon: "fa-scale-balanced", pour: "L'amortissement (construction sur 25-50 ans) ramène l'impôt à quasiment zéro pendant 10-15 ans ; c'est le régime le plus utilisé par les investisseurs qui optimisent.", contre: "Comptabilité obligatoire (200-500 EUR/an d'expert-comptable souvent recommandé) ; l'offre a beaucoup changé par la réforme en discussion (plafonnement possible de l'amortissement)." }
+            { nom: "Nue - micro-foncier", icon: "fa-file-invoice",
+              cond: "Loyers annuels sous 15 000 EUR, biens loués nus.",
+              pour: "Zéro déclaration complexe : abattement automatique de 30% sur les loyers.",
+              contre: "Aucune charge ni intérêt déduisible ; impôt souvent le plus élevé des 4 régimes.",
+              sources: [
+                { n: "Le micro-foncier sur service-public", u: "https://www.service-public.fr/particuliers/vosdroits/F10862" },
+                { n: "Le micro-foncier sur impots.gouv", u: "https://www.impots.gouv.fr/" }
+              ],
+              alerte: "Si vos loyers dépassent 15 000 EUR/an, ce régime n'est plus accessible : vous basculez sur le régime réel." },
+            { nom: "Nue - au réel (foncier)", icon: "fa-file-lines",
+              cond: "Déclaration au réel (formulaire 2044) : aucune limite de loyers.",
+              pour: "Charges, intérêts d'emprunt et travaux sont déduits : intéressant sur un bien récent fortement emprunté ou avec gros travaux (déficit reportable 10 ans).",
+              contre: "Déclaration formelle plus lourde ; le déficit dû aux seuls intérêts est reportable 3 ans ; tout est soumis à votre TMI.",
+              sources: [
+                { n: "Déduction des charges (service-public)", u: "https://www.service-public.fr/particuliers/vosdroits/F10864" },
+                { n: "Le déficit foncier (service-public)", u: "https://www.service-public.fr/particuliers/vosdroits/F25747" }
+              ],
+              alerte: "Le réel ne devient intéressant qu'à partir du moment où vos charges + intérêts + travaux dépassent 30% des loyers : sinon, restez simple." },
+            { nom: "Meublé - micro-BIC (LMNP)", icon: "fa-sofa",
+              cond: "Location meublée avec loyers annuels sous le plafond micro-BIC (72 600 EUR en 2026).",
+              pour: "Abattement de 50% : l'impôt est moitié moindre qu'en micro-foncier ; reste très simple à gérer.",
+              contre: "Plafond de loyers (72 600 EUR/an en 2026, en évolution) ; aucune charge déduite ; exige un statut de location meublée réel (bail 1 an).",
+              sources: [
+                { n: "Le micro-BIC sur service-public", u: "https://www.service-public.fr/particuliers/vosdroits/F32472" },
+                { n: "Le micro-BIC sur impots.gouv", u: "https://www.impots.gouv.fr/" }
+              ],
+              alerte: "En cours de discussion pour la loi de finances (réforme du LMNP) : un plafonnement de cet avantage (abattement ou seuil retrouvé) est envisagé, conditions susceptibles d'évoluer près de chaque loi de finances." },
+            { nom: "Meublé - réel (LMNP)", icon: "fa-scale-balanced",
+              cond: "Déclaration BIC au réel ; comptabilité tenue (expert-comptable recommandé).",
+              pour: "L'amortissement (construction sur 25-50 ans) ramène l'impôt à quasiment zéro pendant 10-15 ans ; c'est le régime le plus utilisé par les investisseurs qui optimisent.",
+              contre: "Comptabilité obligatoire (200-500 EUR/an d'expert-comptable souvent recommandé) ; les amortissements ne créent jamais de déficit reportable.",
+              sources: [
+                { n: "Location meublée : déclarations (service-public)", u: "https://www.service-public.fr/particuliers/vosdroits/F32472" },
+                { n: "Le régime réel du meublé (impots.gouv)", u: "https://www.impots.gouv.fr/" }
+              ],
+              alerte: "En cours de discussion pour la loi de finances (PLF en examen) : l'amortissement du réel pourrait être plafonné (autour de 2,5% du prix) pour les loyers long terme ; à surveiller de près." }
         ];
 
-        function renderStatuts() {
+        // Projection cash-flow et breakeven par régime et horizon (5/10/15/20 ans)
+        function projectionsStatuts(c1, imp) {
+            var regimes = [
+                ["Nue - micro-foncier", imp.microFoncier],
+                ["Nue - au réel (foncier)", imp.reelFoncier],
+                ["Meublé - micro-BIC", imp.microBic],
+                ["Meublé - réel (LMNP)", imp.reelBic]
+            ];
+            return regimes.map(function(r) {
+                var tax = r[1];
+                if (tax === null) return [r[0], null];
+                // c1.cashFlowAnnuelNet inclut l'impot forfaitaire 30% : on le re-regime avec l'impot du régime.
+                var cf = c1.cashFlowAnnuelNet + (c1.impots || 0) - tax;
+                var seuil = cf > 0 ? c1.coutTotal / cf : null;
+                return [r[0], { cfAnnuel: cf, cum: [5, 10, 15, 20].map(function(a) { return cf * a; }), seuil: seuil }];
+            });
+        }
+
+        function renderStatuts(imp, seuilBascule) {
             var sg = document.getElementById('statut-grid');
-            if (!sg || sg.dataset.rendered) return;
-            sg.innerHTML = statutsData.map(function(s) {
+            if (!sg) return;
+            var impTxt = function(v) { return v === null ? null : (v === 0 ? 0 : Math.round(v)); };
+            sg.innerHTML = statutsData.map(function(s, i) {
+                var impVal = imp ? null : undefined;
+                var taxVal = null;
+                if (imp) {
+                    taxVal = [imp.microFoncier, imp.reelFoncier, imp.microBic, imp.reelBic][i];
+                }
+                var lamDisp = '';
+                if (imp && taxVal !== undefined && taxVal !== null) {
+                    var impLib = taxVal === 0 ? '≈ 0 EUR/an (amortissement ou déductions qui annulent la base)' : fmt(taxVal) + ' /an';
+                    lamDisp = '<p><strong>Impôt estimé sur vos loyers :</strong> ' + impLib + '</p>';
+                }
+                if (imp && taxVal === null) {
+                    lamDisp = '<p><strong>Impôt estimé :</strong> non éligible (loyers annuels >= 15 000 EUR).</p>';
+                }
+                var seuilLigne = '';
+                if (seuilBascule && seuilBascule[i]) seuilLigne = '<p>' + seuilBascule[i] + '</p>';
                 return '<div class="statut-card"><h4><i class="fas ' + s.icon + '"></i> ' + s.nom + '</h4>' +
-                    '<ul><li><strong>Pour :</strong> ' + s.pour + '</li>' +
-                    '<li><strong>Contre :</strong> ' + s.contre + '</li></ul>' +
-                    (s.note ? '<p class="statut-impot"><i class="fas fa-triangle-exclamation"></i> ' + s.note + '</p>' : '') +
+                    '<ul><li><strong>Conditions :</strong> ' + s.cond + '</li>' +
+                    '<li><strong>Avantages :</strong> ' + s.pour + '</li>' +
+                    '<li><strong>Inconvénients :</strong> ' + s.contre + '</li></ul>' +
+                    (lamDisp || '') + (seuilLigne || '') +
+                    '<p class="statut-impot"><i class="fas fa-triangle-exclamation"></i> ' + s.alerte + '</p>' +
+                    '<p style="margin-top: 8px;">' + s.sources.map(function(s2) {
+                        return '<a href="' + s2.u + '" class="article-link" target="_blank" rel="noopener">' + s2.n + '</a>';
+                    }).join(' &nbsp; ') + '</p>' +
                     '</div>';
             }).join('');
-            sg.dataset.rendered = '1';
         }
 
         function renderProjet() {
             var el = document.getElementById('projet-content');
             if (!el) return;
+            var impProj = null;
 
             // --- Profil ---
             var profilIdx = 1;
@@ -2127,6 +2363,8 @@
             if (!calcule) {
                 el.innerHTML = '<div class="diversification-card"><h4><i class="fas fa-circle-info"></i> Aucun bien analysé pour l\'instant</h4><p>Rendez-vous dans l\'onglet <strong>Analyser un bien</strong>, renseignez un bien puis revenez : la synthèse, le verdict de viabilité et la projection par statut fiscal se construiront automatiquement à partir de vos chiffres.</p></div>';
                 document.getElementById('fiscal-table').innerHTML = '';
+                var hEl = document.getElementById('horizon-table'); if (hEl) hEl.innerHTML = '';
+                var cEl = document.getElementById('statut-conclusion'); if (cEl) cEl.innerHTML = '';
                 document.getElementById('diversification-content').innerHTML = '';
             } else {
                 var c1 = computeBien(b);
@@ -2185,17 +2423,17 @@
                     '<div class="projet-actions"><h4 style="margin: 10px 0 6px 0;">Actions prioritaires (générées à partir de vos chiffres)</h4><ul>' + actions.map(function(a) { return '<li>' + a + '</li>'; }).join('') + '</ul></div>';
 
                 // --- Projection par statut fiscal ---
-                var imp = projetImpots(b, c1.loyerAnnuel, c1.chargesAnnuelles, 0.30, 0.172);
+                impProj = projetImpots(b, c1.loyerAnnuel, c1.chargesAnnuelles, 0.30, 0.172);
                 var impTxt = function(v) { return v === null ? 'Loyers > 15 000 EUR/an : non éligible' : fmt(v) + ' / an'; };
                 var meilleur = Math.min(
-                    imp.microFoncier !== null ? imp.microFoncier : Infinity,
-                    imp.reelFoncier, imp.microBic, imp.reelBic
+                    impProj.microFoncier !== null ? impProj.microFoncier : Infinity,
+                    impProj.reelFoncier, impProj.microBic, impProj.reelBic
                 );
                 var rows = [
-                    ["Nue - micro-foncier", imp.microFoncier],
-                    ["Nue - au réel (foncier)", imp.reelFoncier],
-                    ["Meublé - micro-BIC (LMNP)", imp.microBic],
-                    ["Meublé - réel (LMNP)", imp.reelBic]
+                    ["Nue - micro-foncier", impProj.microFoncier],
+                    ["Nue - au réel (foncier)", impProj.reelFoncier],
+                    ["Meublé - micro-BIC (LMNP)", impProj.microBic],
+                    ["Meublé - réel (LMNP)", impProj.reelBic]
                 ];
                 var ft = '<thead><tr><th>Régime</th><th style="text-align:left;">Impôt estimé sur vos loyers</th></tr></thead><tbody>';
                 rows.forEach(function(r) {
@@ -2204,10 +2442,58 @@
                 });
                 ft += '</tbody>';
                 document.getElementById('fiscal-table').innerHTML = ft;
+
+                // --- Horizons 5/10/15/20 ans par régime ---
+                var proj = projectionsStatuts(c1, impProj);
+                var ht = '<thead><tr><th>Régime</th><th>Cash-flow mensuel net</th><th>Cumul 5 ans</th><th>Cumul 10 ans</th><th>Cumul 15 ans</th><th>Cumul 20 ans</th><th>Breakeven</th></tr></thead><tbody>';
+                var cfMeilleur = -Infinity, nomBest = '';
+                proj.forEach(function(p) {
+                    if (p[1] === null) {
+                        ht += '<tr><td>' + p[0] + '</td><td colspan="6">Non éligible (loyers >= 15 000 EUR/an)</td></tr>';
+                    } else {
+                        var d = p[1];
+                        var meilleurLigne = d.cfAnnuel > cfMeilleur;
+                        if (meilleurLigne) { cfMeilleur = d.cfAnnuel; nomBest = p[0]; }
+                        est = meilleurLigne ? ' class="winner"' : '';
+                        ht += '<tr><td>' + p[0] + '</td>' +
+                            '<td' + est + '>' + fmt(d.cfAnnuel / 12) + '</td>' +
+                            d.cum.map(function(cv) { return '<td' + est + '>' + (cv >= 0 ? '+' : '') + fmt(cv) + '</td>'; }).join('') +
+                            '<td' + est + '>' + (d.seuil !== null ? d.seuil.toFixed(1) + ' ans' : 'N/A') + '</td></tr>';
+                    }
+                });
+                ht += '</tbody>';
+                var horizonEl = document.getElementById('horizon-table');
+                if (horizonEl) horizonEl.innerHTML = ht;
+
+                // --- Conclusion automatique sur le choix du statut ---
+                var concl = '';
+                var diffAn = null;
+                if (impProj.microFoncier !== null && impProj.reelBic !== 0) {
+                    diffAn = (impProj.microFoncier - impProj.reelBic);
+                }
+                if (impProj.microFoncier !== null && impProj.reelFoncier !== null && impProj.reelFoncier < impProj.microFoncier) {
+                    var interetsAn1 = (b.prix - (b.apport || 0)) * (b.taux / 100);
+                    var gainFoncier = (impProj.microFoncier - impProj.reelFoncier);
+                    concl += 'Avec ' + fmt(c1.chargesAnnuelles) + ' de charges annuelles et environ ' + fmt(interetsAn1) + " d'intérêts d'emprunt la première année, le réel foncier gagne déjà " + fmt(Math.max(0, gainFoncier)) + "/an sur le micro-foncier. En pratique : plus votre emprunt ou votre enveloppe de travaux sont lourds, plus le réel est favorable. A partir de " + fmt(0.3 * c1.loyerAnnuel) + " de charges + intérêts + travaux déductibles par an, le micro abattement (30%) n'est plus le bon choix. ";
+                }
+                if (diffAn !== null && diffAn > 0) {
+                    concl += "Le meublé au réel est gagnant sur le micro-foncier de " + fmt(diffAn) + " d'impôt par an, soit environ " + fmt(diffAn * 20) + " sur 20 ans : c'est ce qui explique l'attrait du LMNP au réel. ";
+                }
+                if (impProj.reelBic === 0) {
+                    concl += "Avec l'amortissement, l'impôt du LMNP au réel tombe à ~0 EUR tant que vos loyers restent au niveau actuel, et les amortissements non consommés se reporteront sur les années suivantes : l'optimisation persiste tant que la base (loyers - charges - intérêts - amortissement) reste négative ou nulle. ";
+                }
+                if (nomBest) {
+                    concl += "Pour votre bien, le régime le plus favorable est : <strong>" + nomBest + "</strong>.";
+                }
+                if (nomBest) {
+                    concl += "Pour votre bien, le régime le plus favorable est : " + nomBest + ".";
+                }
+                var conclEl = document.getElementById('statut-conclusion');
+                if (conclEl) conclEl.innerHTML = concl ? '<div class="diversification-card"><h4><i class="fas fa-lightbulb"></i> Quand changer de statut ?</h4><p>' + concl + '</p></div>' : '';
             }
 
-            // --- Typologies (statique mais adaptée) ---
-            renderStatuts();
+            // --- Typologies (statique mais adaptée) + statuts fiscaux détaillés ---
+            renderStatuts(impProj, null);
             var tg = document.getElementById('typo-grid');
             if (!tg.dataset.rendered) {
                 tg.innerHTML = typologiesData.map(function(t) {
@@ -2406,11 +2692,18 @@
         function renderBiblio() {
             var el = document.getElementById('biblio-list');
             if (!el || el.dataset.rendered) return;
-            el.innerHTML = biblioData.map(function(c) {
-                return '<div class="article-item"><h4><i class="fas ' + c.icon + '" style="margin-right: 8px; color: var(--secondary);"></i>' + c.titre + '</h4>' +
-                    c.items.map(function(i) { return '<p>' + i.t + ' <a href="' + i.u + '" class="article-link" target="_blank" rel="noopener">Ouvrir</a></p>'; }).join('') +
+            var cards = biblioData.map(function(c) {
+                return '<div class="biblio-card"><h4><i class="fas ' + c.icon + '" style="color: var(--secondary);"></i>' + c.titre + '</h4>' +
+                    c.items.map(function(i) { return '<p>' + i.t + ' <a href="' + i.u + '" target="_blank" rel="noopener">Ouvrir</a></p>'; }).join('') +
                     '</div>';
-            }).join('');
+            });
+            var teaser = '<div class="biblio-card teaser-card"><span class="teaser-tag">Bientôt sur le site</span>' +
+                '<h4><i class="fas fa-wand-magic-sparkles"></i> Un agent IA pour analyser avec vous</h4>' +
+                '<p>Demandez-lui : "Ce bien en LMNP ou en location nue ?", "Et si je baisse le loyer de 5% ?", "Quelle ville de la liste cocherait mes objectifs ?".</p>' +
+                '<p>Il analysera vos biens sauvegardés, croisera vos chiffres avec les données du marché et vous proposera des pistes concrètes, étape par étape.</p>' +
+                '<p style="font-weight: 600;">Un abonnement donnera accès à cet assistant personnel : débloquez plus de conseils, plus vite.</p>' +
+                '</div>';
+            el.innerHTML = cards.slice(0, 4).join('') + teaser + (cards[4] || '');
             el.dataset.rendered = '1';
         }
 
