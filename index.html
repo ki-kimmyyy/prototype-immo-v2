@@ -74,24 +74,25 @@
         }
         .disclaimer i { color: #ef4444; }
 
-        /* Banner de navigation collant */
+        /* Banner de navigation collant (bleu foncé, comme le pied de page) */
         .tabs {
             position: sticky;
             top: 0;
             z-index: 1100;
-            background: var(--light);
+            background: var(--footer-bg);
             display: flex;
             gap: 5px;
             padding: 12px 20px;
             flex-wrap: wrap;
-            border-bottom: 1px solid var(--border);
-            box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+            border-bottom: 1px solid #16304f;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.25);
             margin-bottom: 30px;
         }
         .tab {
             padding: 10px 20px;
-            background: var(--light);
-            border: 1px solid var(--border);
+            background: rgba(255,255,255,0.08);
+            color: var(--footer-text);
+            border: 1px solid rgba(255,255,255,0.25);
             border-radius: 999px;
             cursor: pointer;
             transition: all 0.2s;
@@ -100,7 +101,7 @@
             align-items: center;
             gap: 8px;
         }
-        .tab:hover { background: var(--border); }
+        .tab:hover { background: rgba(255,255,255,0.2); }
         .tab-right { margin-left: auto; }
 
         /* Grilles Sources : 2 blocs par ligne */
@@ -188,7 +189,7 @@
             margin: 15px 0 10px 0;
         }
         @media (max-width: 900px) { .sources-cols { grid-template-columns: 1fr; } }
-        .tab.active { background: var(--primary); color: #ffffff; border-color: var(--primary); }
+        .tab.active { background: #ffffff; color: var(--primary); border-color: #ffffff; }
 
         /* Badge "prototype" dans le header */
         .proto-badge {
@@ -391,7 +392,7 @@
         .btn-danger:hover { background: #8f4a36; }
         .dashboard { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
         .card {
-            background: var(--light);
+            background: var(--card-bg);
             border-radius: 12px;
             padding: 25px;
             box-shadow: 0 1px 3px rgba(0,0,0,0.1);
@@ -556,6 +557,17 @@
         .conseils-perso ul { padding-left: 20px; color: var(--dark); font-size: 0.92rem; line-height: 1.7; }
         .conseils-perso li { margin-bottom: 8px; }
         .conseils-perso strong { color: var(--primary); }
+        .conseils-perso.locked { opacity: 0.45; filter: grayscale(0.5); pointer-events: none; }
+        .conseils-locked-msg {
+            background: var(--card-bg);
+            border: 1px dashed var(--border);
+            border-radius: 10px;
+            padding: 18px;
+            text-align: center;
+            color: var(--secondary);
+            font-size: 0.95rem;
+        }
+        .conseils-locked-msg i { margin-right: 8px; color: var(--secondary); }
         .profile-score { font-size: 0.8rem; color: var(--secondary); margin-top: 10px; }
 
         /* Compositions sauvegardées (bande défilante + comparateur multi) */
@@ -664,7 +676,13 @@
         }
         .article-item h4 { color: var(--dark); margin-bottom: 8px; }
         .article-item p { color: var(--secondary); font-size: 0.9rem; }
-        .article-link { color: var(--primary); text-decoration: none; font-weight: 500; margin-top: 8px; display: inline-block; }
+        .article-link { color: #a26a35; text-decoration: underline; text-decoration-color: rgba(162,106,53,0.5); text-underline-offset: 3px; font-weight: 600; margin-top: 8px; display: inline-block; }
+        .article-link:hover { text-decoration-color: #a26a35; }
+        .statut-card a, .biblio-card a { color: #a26a35; font-weight: 600; text-decoration: underline; text-decoration-color: rgba(162,106,53,0.5); text-underline-offset: 3px; }
+        .comp-table tr.na td { color: #8b93a1; background: #f1f0ec; }
+        .na-text { text-decoration: line-through; font-weight: 600; }
+        .comp-table td.winner { font-weight: 700; color: #166534; background: #f0fdf4; border: 1px solid #86efac; border-radius: 6px; }
+        .comp-table td.loser { font-weight: 700; color: #991b1b; background: #fef2f2; border: 1px solid #fecaca; border-radius: 6px; }
         .dpe-comment { background: #fef3c7; border: 1px solid #fde68a; padding: 12px; border-radius: 8px; margin-top: 15px; font-size: 0.9rem; color: #92400e; }
         .mt-20 { margin-top: 20px; }
         .mb-20 { margin-bottom: 20px; }
@@ -807,8 +825,8 @@
 
             <div class="form-section" id="conseils-perso-section">
                 <h2>Conseils personnalisés selon votre profil</h2>
-                <div id="conseils-perso" class="conseils-perso">
-                    <p style="color: var(--secondary);">Répondez au questionnaire ci-dessus (onglet "Mes objectifs") pour afficher des conseils adaptés à votre profil.</p>
+                <div id="conseils-perso" class="conseils-perso locked">
+                    <div class="conseils-locked-msg"><i class="fas fa-lock"></i>Conseils disponibles dès les résultats du test : répondez aux 6 questions ci-dessus puis cliquez sur le bouton de calcul pour débloquer des recommandations adaptées à votre profil.</div>
                 </div>
             </div>
         </div>
@@ -853,15 +871,9 @@
                             <option value="autre">Autre</option>
                         </select>
                     </div>
-                    <div class="form-group has-tooltip" data-tooltip="Saisissez librement le nom de la ville. Les données de référence (prix au m2, tension locative) sont fournies pour Nancy, Douai, Sceaux et Le Conquet. Pour toute autre ville, les indicateurs urbains resteront vides mais les calculs de rentabilité fonctionnent.">
+                    <div class="form-group has-tooltip" data-tooltip="Saisissez librement n'importe quelle ville : grande ville, moyenne, petite ou village. Les calculs de rentabilité fonctionnent toujours. Les données de référence (prix au m2, tension) sont fournies pour les villes du prototype ; pour les autres, utilisez la recherche ville + code postal de l'onglet Sources & Infos.">
                         <label for="ville">Ville</label>
-                        <input id="ville" list="villes-list" autocomplete="off" placeholder="Tapez ou choisissez une ville...">
-                        <datalist id="villes-list">
-                            <option value="Nancy"></option>
-                            <option value="Douai"></option>
-                            <option value="Sceaux"></option>
-                            <option value="Le Conquet"></option>
-                        </datalist>
+                        <input id="ville" autocomplete="off" placeholder="Ex : Nancy, Rennes, Vitré, n'importe quelle ville...">
                     </div>
                     <div class="form-group">
                         <label for="dpe">Performance énergétique (DPE)</label>
@@ -1030,6 +1042,7 @@
                             <div class="card-value" id="risque-vacance">Faible</div>
                         </div>
                     </div>
+                    <p style="margin-top: 12px; font-size: 0.8rem; color: var(--secondary);">Ces données de référence sont fournies pour les villes du prototype (Nancy, Douai, Sceaux, Le Conquet). Pour toute autre ville, les calculs de rentabilité restent valables ; pour les données de marché, utilisez la recherche ville + code postal de l'onglet <strong>Sources &amp; Infos</strong>.</p>
                 </div>
             </div>
         </div>
@@ -1125,7 +1138,7 @@
                             <div class="form-group"><label>Surface (m2)</label><input type="number" id="comp-surface-2-input" placeholder="Ex: 60"></div>
                             <div class="form-group"><label>Loyer (EUR)</label><input type="number" id="comp-loyer-2-input" placeholder="Ex: 700"></div>
                             <div class="form-group"><label>Charges mensuelles (EUR)</label><input type="number" id="comp-charges-2-input" placeholder="Ex: 100" value="100"></div>
-                            <div class="form-group has-tooltip" data-tooltip="Saisissez librement le nom de la ville (Nancy, Douai, Sceaux ou Le Conquet)."><label>Ville</label><input id="comp-ville-2-input" list="villes-list" autocomplete="off" placeholder="Ex: Nancy"></div>
+                            <div class="form-group has-tooltip" data-tooltip="Saisissez librement n'importe quelle ville."><label>Ville</label><input id="comp-ville-2-input" autocomplete="off" placeholder="Ex: Nancy"></div>
                         </div>
                         <button class="btn" onclick="updateComparison()" style="width: 100%;">
                             <i class="fas fa-sync"></i> Mettre à jour
@@ -1177,7 +1190,7 @@
                 <h2>Étude de marché locale</h2>
                 <p style="color: var(--secondary); margin-bottom: 15px;">Découvrez ce qui se loue et se vend le plus dans la ville choisie : prix au m2 et loyers estimés par typologie de bien. Pré-remplissez le Bien 2 en un clic depuis une ligne du tableau.</p>
                 <div style="display: flex; gap: 10px; margin-bottom: 15px; flex-wrap: wrap;">
-                    <input id="marche-ville" list="villes-list" autocomplete="off" placeholder="Ville (ex : Nancy)" style="flex: 1; min-width: 220px; padding: 10px 16px; border: 1px solid var(--border); border-radius: 999px; font-size: 0.95rem;">
+                    <input id="marche-ville" autocomplete="off" placeholder="Ville (ex : Nancy)" style="flex: 1; min-width: 220px; padding: 10px 16px; border: 1px solid var(--border); border-radius: 999px; font-size: 0.95rem;">
                     <button class="btn" onclick="renderMarche()"><i class="fas fa-chart-column"></i> Analyser le marché</button>
                 </div>
                 <div class="multi-table-wrap"><table class="comp-table" id="marche-table"></table></div>
@@ -2208,8 +2221,26 @@
             var html = '<ul>';
             p.conseils.forEach(function(c) { html += '<li>' + c + '</li>'; });
             html += '</ul>';
-            document.getElementById('conseils-perso').innerHTML = html;
+            var cp = document.getElementById('conseils-perso');
+            cp.innerHTML = html;
+            cp.classList.remove('locked');
             document.getElementById('profile-result').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function restaurerProfil() {
+            var idx = null;
+            try { var stored = localStorage.getItem('monProfil'); if (stored !== null) idx = parseInt(stored); } catch (e) {}
+            if (idx === null || isNaN(idx) || !profilDefini[idx]) return;
+            var p = profilDefini[idx];
+            document.getElementById('profile-result').style.display = 'block';
+            document.getElementById('profile-name').textContent = "Profil " + p.nom;
+            document.getElementById('profile-desc').textContent = p.desc;
+            var html = '<ul>';
+            p.conseils.forEach(function(c) { html += '<li>' + c + '</li>'; });
+            html += '</ul>';
+            var cp = document.getElementById('conseils-perso');
+            cp.innerHTML = html;
+            cp.classList.remove('locked');
         }
 
         function resetQuiz() {
@@ -2218,7 +2249,9 @@
                 if (sel) sel.value = '';
             });
             document.getElementById('profile-result').style.display = 'none';
-            document.getElementById('conseils-perso').innerHTML = '<p style="color: var(--secondary);">Répondez au questionnaire ci-dessus (onglet "Mes objectifs") pour afficher des conseils adaptés à votre profil.</p>';
+            var cp = document.getElementById('conseils-perso');
+            cp.classList.add('locked');
+            cp.innerHTML = '<div class="conseils-locked-msg"><i class="fas fa-lock"></i>Conseils disponibles dès les résultats du test : répondez aux 6 questions ci-dessus puis cliquez sur le bouton de calcul pour débloquer des recommandations adaptées à votre profil.</div>';
         }
 
         // ===== Section "Mon projet" =====
@@ -2227,7 +2260,10 @@
             { nom: "Maison", icon: "fa-house", force: "Loue bien aux familles (baux longs, vacance faible) ; potentiel de plus-value sur le terrain ; pas de charges de copropriété.", vigilance: "Entretien plus lourd (toiture, jardin) ; ticket d'entrée plus élevé ; dispersion des appels de fonds.", profil: "Profil défensif ou équilibré en zone pavillonnaire." },
             { nom: "Immeuble", icon: "fa-city", force: "Plusieurs appartements sous un seul ticket : rendement net supérieur (de 1 à 3 points) et vrai levier de valorisation.", vigilance: "Gestion en série (colocation, rotations) ; travaux plus durs à financer ; liquidité de revente plus faible.", profil: "Profil dynamique ou agressif, avec une trésorerie solide." },
             { nom: "Coliving / colocation", icon: "fa-people-roof", force: "Rendement supérieur de 20 à 40% par rapport à la location classique (loyer par chambre) ; demande forte à Nancy, Sceaux (étudiants, jeunes actifs).", vigilance: "Rotations fréquentes = gestion dense ; mobiliers à renouveler ; réglementation à vérifier (normes meublé).", profil: "Dynamique ou agressif, à proximité des universités/axes de transport." },
-            { nom: "Parking / box", icon: "fa-square-parking", force: "Ticket très faible ; quasi zéro gestion (pas de locataire à gérer au quotidien) ; bon moyen de démarrer et d'apprendre en investissant peu.", vigilance: "Rendement brut limité (3-5%) ; valeur dépendante de la localisation ; pas d'emprunt bancaire sur l'anticipation des loyers.", profil: "Complément pour tout profil ; également un test du marché à petit budget." }
+            { nom: "Parking / box", icon: "fa-square-parking", force: "Ticket très faible ; quasi zéro gestion (pas de locataire à gérer au quotidien) ; bon moyen de démarrer et d'apprendre en investissant peu.", vigilance: "Rendement brut limité (3-5%) ; valeur dépendante de la localisation ; pas d'emprunt bancaire sur l'anticipation des loyers.", profil: "Complément pour tout profil ; également un test du marché à petit budget." },
+            { nom: "Location saisonnière (courte durée)", icon: "fa-umbrella-beach", force: "Loyers souvent 1,5 à 3 fois supérieurs à la location classique ; idéal dans les zones touristiques (littoral du Conquet, villes de congrès) ; vous pouvez garder le bien pour vous entre deux réservations.", vigilance: "Revenus irréguliers et saisonniers ; réglementation stricte dans plusieurs villes (autorisations, changement d'usage) ; gestion intensive (ménages, annonces, clés) ou commission de 20-30% pour une conciergerie ; meublement complet à financer.", profil: "Dynamique ou agressif, sur une zone touristique vérifiée ; à éviter si vous cherchez des revenus réguliers." },
+            { nom: "Résidence de services (étudiante, EHPAD, affaires)", icon: "fa-hotel", force: "Gestion totalement déléguée à un exploitant (aucun locataire à gérer) ; fiscalité LMNP applicable ; ticket d'entrée parfois accessible.", vigilance: "La rentabilité dépend de la solidité de l'exploitant (si elle fait faillite, les loyers s'arrêtent) ; revente difficile ; Censi-Bouvard plafonné ; attention aux promesses commerciales des vendeurs.", profil: "Défensif en apparence seulement : vérifiez l'exploitant et le bail commercial avant tout, puis comparez avec un T2 classique." },
+            { nom: "Local commercial ou bureau", icon: "fa-store", force: "Baux commerciaux de 3-6-9 ans : locataire très stable, loyers souvent supérieurs ; le locataire paie généralement une partie des charges et la taxe foncière.", vigilance: "Sensible à la conjoncture (commerce de proximité, bureaux post-Covid) ; vacance potentiellement très longue ; financement bancaire plus exigeant ; travaux d'aménagement spécifiques.", profil: "Équilibré à agressif, avec une bonne connaissance du commerce local ; à considérer en 2e ou 3e investissement." }
         ];
 
         function mensualitePour(prix, apport, taux, duree) {
@@ -2429,6 +2465,10 @@
                     impProj.microFoncier !== null ? impProj.microFoncier : Infinity,
                     impProj.reelFoncier, impProj.microBic, impProj.reelBic
                 );
+                var pire = Math.max(
+                    impProj.microFoncier !== null ? impProj.microFoncier : 0,
+                    impProj.reelFoncier, impProj.microBic, impProj.reelBic
+                );
                 var rows = [
                     ["Nue - micro-foncier", impProj.microFoncier],
                     ["Nue - au réel (foncier)", impProj.reelFoncier],
@@ -2437,7 +2477,11 @@
                 ];
                 var ft = '<thead><tr><th>Régime</th><th style="text-align:left;">Impôt estimé sur vos loyers</th></tr></thead><tbody>';
                 rows.forEach(function(r) {
-                    var est = r[1] === meilleur ? ' class="winner"' : '';
+                    if (r[1] === null) {
+                        ft += '<tr class="na"><td>' + r[0] + '</td><td><span class="na-text">Non applicable</span> (loyers >= 15 000 EUR/an)</td></tr>';
+                        return;
+                    }
+                    var est = r[1] === meilleur ? ' class="winner"' : (r[1] === pire && pire > 0 ? ' class="loser"' : '');
                     ft += '<tr><td>' + r[0] + '</td><td' + est + '>' + (r[1] === 0 ? '≈ 0 EUR (déficit reportable)' : impTxt(r[1])) + '</td></tr>';
                 });
                 ft += '</tbody>';
@@ -2445,16 +2489,19 @@
 
                 // --- Horizons 5/10/15/20 ans par régime ---
                 var proj = projectionsStatuts(c1, impProj);
+                var pireCf = Infinity;
+                proj.forEach(function(p) { if (p[1] && p[1].cfAnnuel < pireCf) pireCf = p[1].cfAnnuel; });
                 var ht = '<thead><tr><th>Régime</th><th>Cash-flow mensuel net</th><th>Cumul 5 ans</th><th>Cumul 10 ans</th><th>Cumul 15 ans</th><th>Cumul 20 ans</th><th>Breakeven</th></tr></thead><tbody>';
                 var cfMeilleur = -Infinity, nomBest = '';
                 proj.forEach(function(p) {
                     if (p[1] === null) {
-                        ht += '<tr><td>' + p[0] + '</td><td colspan="6">Non éligible (loyers >= 15 000 EUR/an)</td></tr>';
+                        ht += '<tr class="na"><td>' + p[0] + '</td><td colspan="6"><span class="na-text">Non applicable</span> (loyers >= 15 000 EUR/an)</td></tr>';
                     } else {
                         var d = p[1];
                         var meilleurLigne = d.cfAnnuel > cfMeilleur;
                         if (meilleurLigne) { cfMeilleur = d.cfAnnuel; nomBest = p[0]; }
-                        est = meilleurLigne ? ' class="winner"' : '';
+                        var pireLigne = d.cfAnnuel === pireCf && proj.filter(function(x) { return x[1]; }).length > 1;
+                        est = meilleurLigne ? ' class="winner"' : (pireLigne ? ' class="loser"' : '');
                         ht += '<tr><td>' + p[0] + '</td>' +
                             '<td' + est + '>' + fmt(d.cfAnnuel / 12) + '</td>' +
                             d.cum.map(function(cv) { return '<td' + est + '>' + (cv >= 0 ? '+' : '') + fmt(cv) + '</td>'; }).join('') +
@@ -2509,10 +2556,15 @@
             var dc = document.getElementById('diversification-content');
             if (dc) {
                 dc.innerHTML =
-                    '<div class="diversification-card"><h4><i class="fas fa-layer-group"></i> Deux T2 au lieu d\'une maison</h4><p>Même enveloppe globale, mais deux loyers au lieu d\'un : si un locataire part, vous continuez à encaisser. La revente est aussi plus souple (liquer l\'un sans toucher à l\'autre).</p></div>' +
-                    '<div class="diversification-card"><h4><i class="fas fa-people-roof"></i> Un immeuble colivé</h4><p>Le même apport concentré sur un petit immeuble divisé en chambres exploite effectivement l\'écart entre prix à l&#39;achat et loyer cumulé coliving. C\'est le scénario le plus rentable, mais aussi le plus pilote (rotations, mobiliers) et celui dont la revente est la plus étroite.</p></div>' +
-                    '<div class="diversification-card"><h4><i class="fas fa-square-parking"></i> Parking ou box en centre-ville</h4><p>Avec une fraction de votre apport uniquement, un parking bien placé (centre des villes desservies sur la carte) génère un rendement modeste mais sans gestion, idéal pour apprendre sans risque tout en gardant le reste de l\'apport pour celui du bien principal.</p></div>' +
-                    '<p style="font-size: 0.8rem; color: var(--secondary); margin-top: 5px;">Ces pistes sont indicatives : chiffrez les dans le comparateur (enregistrez chaque scénario comme une composition) avant toute décision.</p>';
+                    '<p style="margin-bottom: 15px;">Avec le même apport et la même capacité d&#39;emprunt, plusieurs trajectoires existent. L&#39;objectif de cette partie est de vous faire visualiser les grandes familles de stratégies, du plus prudent au plus audacieux : chacune chiffre dans le comparateur (enregistrez chaque scénario comme une composition pour les comparer côte à côte).</p>' +
+                    '<div class="diversification-card"><h4><i class="fas fa-layer-group"></i> Deux T2 au lieu d\'une maison</h4><p>Même enveloppe globale, mais deux loyers au lieu d\'un : si un locataire part, vous continuez à encaisser. La revente est aussi plus souple (liquider l\'un sans toucher à l\'autre).</p></div>' +
+                    '<div class="diversification-card"><h4><i class="fas fa-people-roof"></i> Un immeuble colivé</h4><p>Le même apport concentré sur un petit immeuble divisé en chambres exploite l\'écart entre prix à l&#39;achat et loyer cumulé coliving. C\'est le scénario le plus rentable, mais aussi le plus piloté (rotations, mobiliers) et celui dont la revente est la plus étroite.</p></div>' +
+                    '<div class="diversification-card"><h4><i class="fas fa-square-parking"></i> Parking ou box en centre-ville</h4><p>Avec une fraction de votre apport uniquement, un parking bien placé (centre des villes desservies sur la carte) génère un rendement modeste mais sans gestion, idéal pour apprendre sans risque tout en gardant le reste de l\'apport pour le bien principal.</p></div>' +
+                    '<div class="diversification-card"><h4><i class="fas fa-hammer"></i> Achat à travaux et déficit foncier</h4><p>Acheter un bien décoté à rénover, réaliser les travaux, puis le louer : les travaux se déduisent des loyers (jusqu\'à 10 700 EUR/an imputables sur votre revenu global en déficit foncier). Stratégie intéressante pour les profils bien imposés qui acceptent un chantier : l&#39;économie d&#39;impôt + la décote à l&#39;achat créent souvent la performance.</p></div>' +
+                    '<div class="diversification-card"><h4><i class="fas fa-water"></i> Meublé de tourisme en littoral ou station</h4><p>Un T2 meublé au Conquet ou dans une station similaire peut viser 1,5 à 2 fois le loyer annuel classique en saisonnier, avec le LMNP pour lisser la fiscalité. Contrepartie : revenus irréguliers, gestion plus lourde, réglementation à vérifier localement.</p></div>' +
+                    '<div class="diversification-card"><h4><i class="fas fa-stairs"></i> L\'escargot : commencer petit, réinvestir</h4><p>Une stratégie répandue : un premier studio ou parking à crédit faible, 2-3 ans de discipline, puis l&#39;équité et l&#39;expérience du premier bien financent le second, puis le troisième. Lent mais très robuste, adapté aux profils défensifs qui veulent construire progressivement.</p></div>' +
+                    '<div class="diversification-card"><h4><i class="fas fa-file-signature"></i> Démembrement : nue-propriété</h4><p>Acheter la nue-propriété d\'un bien (temporairement sans loyer, avec un prix décoté de 30 à 40%), pendant qu\'un autre perçoit les loyers (l\'usufruitier) et couvre les charges. Au terme (10-20 ans), vous récupérez la pleine propriété sans fiscalité sur la transmission. Pour investisseurs patients qui n\'ont pas besoin de revenus immédiats.</p></div>' +
+                    '<p style="font-size: 0.8rem; color: var(--secondary); margin-top: 5px;">Ces pistes sont indicatives : chiffrez-les dans le comparateur (enregistrez chaque scénario comme une composition) avant toute décision.</p>';
             }
         }
 
@@ -2711,31 +2763,49 @@
             return v.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim().replace(/\s+/g, '-');
         }
 
+        function zoneMsg(html) {
+            var el = document.getElementById('zone-links');
+            if (el) el.innerHTML = html;
+        }
+
         function renderZoneLinks() {
             var ville = (document.getElementById('zone-ville').value || '').trim();
             var cp = (document.getElementById('zone-cp').value || '').trim();
-            if (!ville) return;
+            if (!ville) {
+                zoneMsg('<p style="color: var(--secondary); font-size: 0.9rem;">Saisissez d&#39;abord une ville (avec ou sans code postal), puis cliquez sur Afficher les sources.</p>');
+                return;
+            }
+            if (cp && !/^\d{5}$/.test(cp)) {
+                zoneMsg('<p style="color: #b0453a; font-size: 0.9rem;">Le code postal doit contenir 5 chiffres (ex : 54000). Relancez la recherche, ou laissez le champ vide.</p>');
+                return;
+            }
             var slug = zoneSlug(ville);
             var withCp = cp ? slug + '-' + cp : slug;
             var links = [
-                { n: "Ventes réelles (DVF, officiel)", u: "https://app.dvf.etalab.gouv.fr/", d: "Carte des ventes réelles adresse par adresse" },
-                { n: "Prix au m2 (MeilleursAgents)", u: "https://www.meilleursagents.com/prix-immobilier/" + withCp + "/", d: "Prix et loyers estimés par quartier" },
-                { n: "Prix au m2 (ParuVendu / notaires)", u: "https://www.paruvendu.fr/immobilier/prix-m2/" + withCp + "/", d: "Données de ventes notaires-DGFiP" },
-                { n: "Dernières ventes (Immo-DVF)", u: "https://www.immo-dvf.fr/?ville=" + encodeURIComponent(ville), d: "Rechercher les ventes récentes" },
+                { n: "Ventes réelles (DVF, officiel)", u: "https://app.dvf.etalab.gouv.fr/", d: "Carte interactive des ventes réelles adresse par adresse : filtrez sur votre commune" },
+                { n: "Prix au m2 (ParuVendu / notaires)" + (cp ? " - " + cp : ""), u: "https://www.paruvendu.fr/immobilier/prix-m2/" + withCp + "/", d: "Données de ventes notaires-DGFiP, évolution sur 1 an" },
+                { n: "Prix au m2 et loyers (MeilleursAgents)", u: "https://www.meilleursagents.com/prix-immobilier/" + withCp + "/", d: "Prix et loyers estimés par quartier" },
+                { n: "Recherche marché (Google)", u: "https://www.google.com/search?q=" + encodeURIComponent("prix immobilier m2 " + ville + (cp ? " " + cp : "")), d: "Tous les portails couvrant votre commune (Immovrai, Immo-DVF, Chambre des notaires...)" },
                 { n: "Actualités locales", u: "https://news.google.com/search?q=" + encodeURIComponent("immobilier " + ville), d: "Projets urbains et marché dans la presse récente" }
             ];
-            document.getElementById('zone-links').innerHTML = links.map(function(l) {
+            var head = '<p style="margin-bottom: 10px; font-size: 0.85rem; color: var(--secondary);">Sources ouvertes pour ' + escapeHtml(ville) + (cp ? ' (' + cp + ')' : '') + ' :</p>';
+            zoneMsg(head + links.map(function(l) {
                 return '<li class="source-item"><div class="source-icon"><i class="fas fa-arrow-up-right-from-square"></i></div>' +
                     '<div class="source-content"><h4><a href="' + l.u + '" class="source-link" target="_blank" rel="noopener">' + l.n + '</a></h4>' +
                     '<p>' + l.d + '</p></div></li>';
-            }).join('');
+            }).join(''));
         }
 
         document.addEventListener('DOMContentLoaded', function() {
             updateComparison();
             renderCompos();
             renderQuiz();
-            renderBiblio();            // Mise à jour automatique du Bien 2 dès qu'un champ est modifié
+            renderBiblio();
+            restaurerProfil();
+            ['zone-ville', 'zone-cp'].forEach(function(id) {
+                var el = document.getElementById(id);
+                if (el) el.addEventListener('keydown', function(e) { if (e.key === 'Enter') { e.preventDefault(); renderZoneLinks(); } });
+            });            // Mise à jour automatique du Bien 2 dès qu'un champ est modifié
             ['comp-prix-2-input', 'comp-surface-2-input', 'comp-loyer-2-input', 'comp-charges-2-input'].forEach(function(id) {
                 var el = document.getElementById(id);
                 if (el) el.addEventListener('input', updateComparison);
